@@ -1,0 +1,12 @@
+micro.index.path=/Users/khast/index-java
+micro.index.prefix=cw12b.ef
+micro.matching=MaxScore
+#micro.queries=/Users/khast/query-log/uqv100/uqv100-newqid-queries-unique-stem-stop-lex-uniq.txt
+#micro.queries=/Users/khast/query-log/uqv100/del.me
+micro.queries=/Users/khast/query-log/TREC/cw12b/web2013.stop.stem.lex.txt
+#micro.queries.id=true
+micro.topk=10
+micro.termpipelines=
+
+#micro.results.output.type=trec
+#micro.results.filename=results_uqv100.gz

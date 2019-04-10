@@ -1,0 +1,165 @@
+package it.cnr.isti.hpclab.maxscore;
+
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.io.FilenameUtils;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.ParserProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.terrier.structures.Index;
+import org.terrier.structures.IndexOnDisk;
+
+import it.cnr.isti.hpclab.ef.TermPartition;
+import it.cnr.isti.hpclab.matching.structures.WeightingModel;
+import it.cnr.isti.hpclab.maxscore.structures.BlockMaxScoreIndex;
+import it.unimi.dsi.logging.ProgressLogger;
+
+public class BMWGenerator 
+{
+	protected static Logger LOGGER = LoggerFactory.getLogger(BMWGenerator.class);
+	protected final static ProgressLogger pl = new ProgressLogger(LOGGER, 30, TimeUnit.SECONDS, "term");
+	
+	private final int num_terms;
+	private final String wm_name;
+	
+	public static final class Args 
+	{
+	    // required arguments
+
+	    @Option(name = "-index",  metaVar = "[String]", required = true, usage = "Input Index")
+	    public String index;
+
+	    @Option(name = "-b",  metaVar = "[Number]", required = true, usage = "Block Size")
+	    public String bs;
+
+	    // optional arguments
+	    
+	    @Option(name = "-p", metaVar = "[Number]", required = false, usage = "Parallelism degree")
+	    public String parallelism;	    
+	}
+
+	public BMWGenerator(final String src_index_path, final String src_index_prefix) throws Exception 
+	{	
+		// Load input index
+		IndexOnDisk src_index = Index.createIndex(src_index_path, src_index_prefix);
+		if (Index.getLastIndexLoadError() != null) {
+			throw new RuntimeException("Error loading index: " + Index.getLastIndexLoadError());
+		}
+		this.num_terms = src_index.getCollectionStatistics().getNumberOfUniqueTerms();
+		this.wm_name = src_index.getIndexProperty("index.maxscore.weighting_model", "");
+		
+		src_index.close();
+		LOGGER.info("Input index contains " + this.num_terms + " terms");
+		pl.expectedUpdates = num_terms;
+		
+		// check dst maxscore index does not exist 
+		if (Files.exists(Paths.get(src_index_path + File.separator + src_index_prefix + BlockMaxScoreIndex.STRUCTURE_NAME + BlockMaxScoreIndex.DOCID_EXT))) {
+			throw new RuntimeException("Index directory " + src_index_path + " already contains an index with prefix " + src_index_prefix);
+		}		
+		
+		// check wm exists
+		try {
+			@SuppressWarnings("unused")	WeightingModel mModel = (WeightingModel) (Class.forName(wm_name).asSubclass(WeightingModel.class).getConstructor().newInstance());
+		} catch (Exception e) {
+			throw new RuntimeException("Problem loading weighting model (" + wm_name + ")");
+		}
+	}
+	
+	public static void main(String[] argv)
+	{
+		IndexOnDisk.setIndexLoadingProfileAsRetrieval(false);
+		
+		Args args = new Args();
+		CmdLineParser parser = new CmdLineParser(args, ParserProperties.defaults().withUsageWidth(90));
+		try {
+			parser.parseArgument(argv);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			parser.printUsage(System.err);
+			return;
+		}
+		
+		final String src_index_path = FilenameUtils.getFullPath(args.index);
+		final String src_index_prefix = FilenameUtils.getBaseName(args.index);
+		
+		final int num_threads = ( (args.parallelism != null && Integer.parseInt(args.parallelism) > 1) 
+										? Math.min(ForkJoinPool.commonPool().getParallelism(), Integer.parseInt(args.parallelism)) 
+										: 1) ;
+
+		final int block_size = ( (args.bs != null && Integer.parseInt(args.bs) >= 2) ? Integer.parseInt(args.bs) : 2) ;
+
+		LOGGER.info("Started " + BMWGenerator.class.getSimpleName() + " with parallelism " + num_threads + " (out of " + ForkJoinPool.commonPool().getParallelism() + " max parallelism available), using posting blocks of size " + block_size);
+		LOGGER.warn("Multi-threaded MaxScore generation is experimental - caution advised due to threads competing for available memory! YMMV.");
+
+		long starttime = System.currentTimeMillis();
+		
+		pl.start();
+		try {
+			BMWGenerator generator = new BMWGenerator(src_index_path, src_index_prefix);
+			
+			TermPartition[] partitions = generator.partition(num_threads);
+			BMWMapper mapper = new BMWMapper(src_index_path, src_index_prefix, generator.wm_name, block_size);
+			BMWReducer merger = new BMWReducer(src_index_path, src_index_prefix);
+
+			TermPartition[] tmp_partitions = Arrays.stream(partitions).parallel().map(mapper).sorted().toArray(TermPartition[]::new);
+			
+			TermPartition last_partition = Arrays.stream(tmp_partitions).reduce(merger).get();
+			
+			
+			// Eventually, we rename the last merge
+			Files.move(Paths.get(src_index_path, last_partition.prefix() + BlockMaxScoreIndex.STRUCTURE_NAME + BlockMaxScoreIndex.DOCID_EXT),
+					   Paths.get(src_index_path, src_index_prefix        + BlockMaxScoreIndex.STRUCTURE_NAME + BlockMaxScoreIndex.DOCID_EXT));
+			Files.move(Paths.get(src_index_path, last_partition.prefix() + BlockMaxScoreIndex.STRUCTURE_NAME + BlockMaxScoreIndex.SCORE_EXT),
+					   Paths.get(src_index_path, src_index_prefix        + BlockMaxScoreIndex.STRUCTURE_NAME + BlockMaxScoreIndex.SCORE_EXT));
+			Files.move(Paths.get(src_index_path, last_partition.prefix() + BlockMaxScoreIndex.STRUCTURE_NAME + BlockMaxScoreIndex.OFFSET_EXT),
+					   Paths.get(src_index_path, src_index_prefix        + BlockMaxScoreIndex.STRUCTURE_NAME + BlockMaxScoreIndex.OFFSET_EXT));
+
+			// important, last element is total number of blocks
+			String os = src_index_path + File.separator + src_index_prefix + BlockMaxScoreIndex.STRUCTURE_NAME + BlockMaxScoreIndex.OFFSET_EXT;
+			DataOutputStream offsetsOutput = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(os, true)));
+			offsetsOutput.writeLong(Files.size(Paths.get(os)) / Long.BYTES);
+			offsetsOutput.close();
+						
+			writeProperties(src_index_path, src_index_prefix, block_size);
+
+			long endtime = System.currentTimeMillis();
+			
+			LOGGER.info("Multi-threaded MaxScore generation completed after " + (endtime - starttime)/1000 + " seconds, using "  + num_threads + " threads");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		pl.stop();
+	}
+	
+	private static void writeProperties(String indexPath, String indexPrefix, final int block_size) throws IOException
+	{
+		IndexOnDisk index = Index.createIndex(indexPath, indexPrefix);
+		index.setIndexProperty("index.blockmaxscore.class","it.cnr.isti.hpclab.maxscore.structures.BlockMaxScoreIndex");
+		index.setIndexProperty("index.blockmaxscore.parameter_types","org.terrier.structures.Index");
+		index.setIndexProperty("index.blockmaxscore.parameter_values","index");
+		index.setIndexProperty("index.blockmaxscore.block_size",Integer.toString(block_size));
+		index.close();		
+	}
+
+	public TermPartition[] partition(final int num_threads)
+	{
+		return TermPartition.split(num_terms, num_threads);
+	}
+	
+	synchronized public static void update_logger()
+	{
+		pl.update();
+	}
+}
