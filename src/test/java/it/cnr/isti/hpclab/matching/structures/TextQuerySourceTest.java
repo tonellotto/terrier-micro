@@ -9,8 +9,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.common.io.Files;
@@ -23,17 +21,7 @@ public class TextQuerySourceTest
 { 	
 	private final int[] qids          = {11, 22, 32, 41, 5 };
 	private final String[] queries    = {"a", "b", "c", "d", "e" };
-	
-	@BeforeClass
-	public static void setup() throws IOException
-	{
-	}
-	
-	@AfterClass
-	public static void cleanup()
-	{
-	}
-	
+		
 	@Test public void testQuerySourceNoQids() throws IOException
 	{
 		MatchingConfiguration.set(Property.HAS_QUERY_ID, "false");

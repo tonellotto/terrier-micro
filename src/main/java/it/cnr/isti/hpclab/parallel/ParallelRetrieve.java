@@ -38,7 +38,7 @@ public class ParallelRetrieve
 			input.close();
 		
 			if (answer.matches("[N|n]"))
-				System.exit(0);
+				Runtime.getRuntime().exit(0);
 		}
 				
 		ParallelQuerying querying = new ParallelQuerying();

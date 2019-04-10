@@ -55,11 +55,11 @@ public class ThresholdQuerySource extends TextQuerySource
 				String[] tokens = line.split("\\s+");
 				if (!hasIds()) {
 					if (line.contains(" "))
-						throw new RuntimeException("Whitespaces in thresholds are not allowed");
+						throw new IllegalStateException("Whitespaces in thresholds are not allowed");
 					mQueryThresholds[queryCount++] = Float.parseFloat(line);
 				} else {
 					if (tokens.length != 2)
-						throw new RuntimeException("Something wrong in thresholds... maybe missing qids or too many fields");
+						throw new IllegalStateException("Something wrong in thresholds... maybe missing qids or too many fields");
 					qidPos = Arrays.stream(mQueryIds).boxed().collect(Collectors.toList()).indexOf(Integer.parseInt(tokens[0]));
 
 					if (qidPos < 0)

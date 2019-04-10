@@ -54,7 +54,7 @@ public class MSGenerator
 		// Load input index
 		IndexOnDisk src_index = Index.createIndex(src_index_path, src_index_prefix);
 		if (Index.getLastIndexLoadError() != null) {
-			throw new RuntimeException("Error loading index: " + Index.getLastIndexLoadError());
+			throw new IllegalArgumentException("Error loading index: " + Index.getLastIndexLoadError());
 		}
 		this.num_terms = src_index.getCollectionStatistics().getNumberOfUniqueTerms();
 		src_index.close();
@@ -63,14 +63,14 @@ public class MSGenerator
 		
 		// check dst maxscore index does not exist 
 		if (Files.exists(Paths.get(src_index_path + File.separator + src_index_prefix + MaxScoreIndex.USUAL_EXTENSION))) {
-			throw new RuntimeException("Index directory " + src_index_path + " already contains an index with prefix " + src_index_prefix);
+			throw new IllegalArgumentException("Index directory " + src_index_path + " already contains an index with prefix " + src_index_prefix);
 		}		
 		
 		// check wm exists
 		try {
 			@SuppressWarnings("unused")	WeightingModel mModel = (WeightingModel) (Class.forName(wm_name).asSubclass(WeightingModel.class).getConstructor().newInstance());
 		} catch (Exception e) {
-			throw new RuntimeException("Problem loading weighting model (" + wm_name + ")");
+			throw new IllegalArgumentException("Problem loading weighting model (" + wm_name + ")");
 		}
 	}
 	

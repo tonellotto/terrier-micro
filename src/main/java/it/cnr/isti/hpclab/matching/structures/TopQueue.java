@@ -239,9 +239,12 @@ public class TopQueue implements java.io.Serializable
 		if (k != that.k)
 			return false;
 		if (queue == null) {
+			/*
 			if (that.queue != null)
 				return false;
 			return true;
+			*/
+			return that.queue == null;
 		}
 		try {
 			if (!TopQueue.compare(this.copy(), that.copy()))
@@ -257,9 +260,11 @@ public class TopQueue implements java.io.Serializable
 		while (!tq1.top().isEmpty() && ! tq2.top().isEmpty())
 			if (!tq1.top().dequeue().equals(tq2.top().dequeue()))
 				return false;
+		/*
 		if (tq1.top().isEmpty() && tq2.top().isEmpty())
 			return true;
-		
 		return false;
+		*/
+		return tq1.top().isEmpty() && tq2.top().isEmpty();
 	}
 }

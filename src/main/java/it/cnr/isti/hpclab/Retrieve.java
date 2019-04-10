@@ -37,7 +37,7 @@ public class Retrieve
 			input.close();
 		
 			if (answer.matches("[N|n]"))
-				System.exit(0);
+				Runtime.getRuntime().exit(0);
 		}
 				
 		Querying querying = new Querying();

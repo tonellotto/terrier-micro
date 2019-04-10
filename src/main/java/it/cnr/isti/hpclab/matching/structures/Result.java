@@ -106,9 +106,12 @@ public class Result implements Comparable<Result>, java.io.Serializable
 		Result other = (Result) obj;
 		if (docid != other.docid)
 			return false;
+		/*
 		if (Float.floatToIntBits(score) != Float.floatToIntBits(other.score))
 			return false;
 		return true;
+		*/
+		return Float.floatToIntBits(score) == Float.floatToIntBits(other.score);
 	}
 	
 	/*

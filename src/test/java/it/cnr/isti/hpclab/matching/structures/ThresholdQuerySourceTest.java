@@ -9,8 +9,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.common.io.Files;
@@ -25,17 +23,7 @@ public class ThresholdQuerySourceTest
 	private final int[] qids          = {11, 22, 32, 41, 5 };
 	private final String[] queries    = {"a", "b", "c", "d", "e" };
 	private final String[] thresholds = {"0.1", "0.2", "0.3", "0.4", "0.5" };
-	
-	@BeforeClass
-	public static void setup() throws IOException
-	{
-	}
-	
-	@AfterClass
-	public static void cleanup()
-	{
-	}
-	
+		
 	@Test public void testThresholdsNoQids() throws IOException
 	{
 		File tmpFolder = Files.createTempDir();

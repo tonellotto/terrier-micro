@@ -34,7 +34,7 @@ public class DLH13 implements WeightingModel
 	@Override
 	public final float score(int query_freq, int term_freq, int doc_len, int doc_freq) 
 	{
-		throw new RuntimeException("This method should not be invoked, you need to pass 'term_freq_in_coll'!");
+		throw new UnsupportedOperationException("This method should not be invoked, you need to pass 'term_freq_in_coll'!");
 	}
 	
 	/** {@inheritDoc} */

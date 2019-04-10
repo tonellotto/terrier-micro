@@ -99,4 +99,4 @@ public class BMWReducer implements BinaryOperator<TermPartition>
 	    Files.delete(in_file_2);
 	    return offset;
 	}
-};
+}
