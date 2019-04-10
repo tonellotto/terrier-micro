@@ -45,13 +45,8 @@ public class MatchingConfiguration
 	 	RESULTS_FILENAME          	("micro.results.filename",		"results.gz"),
 		
 	 	THRESHOLD_FILE     			("micro.queries.threshold",	""),
-	 	
-		TIMEOUT_MILLIS     			("micro.timeout.millis",	"0"),
-		
-		NUM_PARTITIONS				("num.partitions", 			"1"),
-		PARTITION_FILE				("partition.file", 			""),	
-		
-		NULL						("null", "null");
+
+	 	NULL						("null", "null");
 		  
 		private final String mName;
 		private final String mDefaultValue;

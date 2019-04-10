@@ -4,7 +4,7 @@ Dynamic pruning strategies such as `BlockMaxWand` require a block max score data
 
 To generate a block max score index, computing the block max scores *using the weighting model used to generate the max score index*, and with a block size of 128 postings:
 
-```
+```bash
 	./target/bin/bmw-generate -index /path/to/old/index/cw09b.properties -b 128
 ```
 
@@ -14,19 +14,15 @@ The `bmw-generate` tools accepts the following options.
 -index [String] (required)
 ```
 
-Path of the existing Terrier index. The parameter will be split automatically into a Terrier path and prefix:
-
-```
-path = FilenameUtils.getFullPath(index);
-prefix = FilenameUtils.getBaseName(index);
-```
+Fully qualified filename of one of the files of a existing Terrier index. The parameter will be split automatically into a Terrier path and prefix.
 
 ```
 -b [Number] (required)
 ```
 
-The number of postings in a single block (typically, 64 or 128 posting, see the [Faster BlockMax WAND with Variable-sized Blocks](https://dl.acm.org/citation.cfm?id=3080780) paper for more details.
-  
+The number of postings in a single block (typically, 64 or 128 posting, see the [Faster BlockMax WAND with Variable-sized Blocks](https://dl.acm.org/citation.cfm?id=3080780) paper for more details).
+The index properties file now includes the blocxk size used to generate the _block max score_ index.
+
 ```
 -p [Number] (optional)
 ```
@@ -34,10 +30,10 @@ The number of postings in a single block (typically, 64 or 128 posting, see the 
 Number of threads to use. Anyway the maximum value will be the number of available cores. Default: 1.
 
 **Multi-threaded compressions is experimental -- caution advised due to threads competing for available memory!**
-	
+
 ## BlockMaxScoreIndex usage
 
-Once generate, the new **max score index** can be accessed and used as any other Terrier 5 index data structure:
+Once generated, the new **max score index** can be accessed and used as any other Terrier 5 index data structure:
 
 ```java
 import it.cnr.isti.hpclab.maxscore.structures.BlockMaxScoreIndex;
@@ -51,7 +47,7 @@ When a index is opened for query processing, the block max score array is fully 
 ## Notes
 
 - for memory problems, check the `appassembler` Maven plugin parameter in the [POM](../pom.xml) file
-	
+
 ## Credits
 
 Developed by Nicola Tonellotto, ISTI-CNR.

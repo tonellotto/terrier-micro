@@ -31,15 +31,15 @@ The configuration of this script is completely managed by Java properties, as re
 The values can be changed by using Java command-line system property values:
 
 ```shell
-    java -Dmicro.queries=/tmp/somefile.txt ...
+    java -Dmicro.queries=/tmp/somefile.txt <...>
 ```
 or by including a `micro.properties` file in the classpath.
 
 ## Query Format
 
-Queries are read by the `QuerySource` class, one per line, **verbatim** from the file(s) specified by the `micro.queries` property. Empty lines and lines starting with `#` are ignored. 
+Queries are read by the `QuerySource` class, one per line, **verbatim**, from the file(s) specified by the `micro.queries` property. Empty lines and lines starting with `#` are ignored. 
 By default, queries are tokenised by this class, and are passed verbatim to the query parser. Tokenisation can be turned off by the property `micro.queries.tokenise`.
-Moreover, the first token on each line can be the query id. This can be controlled by the property `micro.queries.id` (default `false`).
+Moreover, the first token on each line can be the query id. This can be controlled by the property `micro.queries.id` (default: `false`).
 
 ## Matching Algorithms
 
@@ -47,9 +47,9 @@ A matching algorithm must implement the `MatchingAlgorithm` interface. The match
 
 |Class|Description|
 |-----|-----------|
-|**`And`**      	|Boolean AND, scores are not computed, no results are actually returned, intersection computed with linear scan of shortest posting list.|
+|**`And`**      	|Boolean AND, scores are not computed, no results are actually returned.|
 |**`Or`**       	|Boolean OR, scores are not computed, no results are actually returned.|
-|**`RankedAnd`**	|Ranked AND processing, `micro.topk` documents returned with their scores, intersection computed with linear scan of shortest posting list.|
+|**`RankedAnd`**	|Ranked AND processing, `micro.topk` documents returned with their scores.|
 |**`RankedOr`** 	|Ranked OR processing, `micro.topk` documents returned with their scores, implemented as DAAT.|
 |**`MaxScore`** 	|Ranked OR processing, `micro.topk` documents returned with their scores, implemented as Turtle & Flood's MaxScore.|
 |**`Wand`**     	|Ranked OR processing, `micro.topk` documents returned with their scores, implemented as Carmel & Broder's WAND.|
@@ -61,7 +61,7 @@ Use the provided Java program `Retrieve` as follows.
 ```shell
 java it.cnr.isti.hpclab.Retrieve [y]
 ```
-The program uses the Java properties to configure its runtime. The only parameter flag `y`, if present, will print to stderr all configured properties with their values, waiting for confirmation to proceed. Otherwise, the query processing will begin, outputting results to stdout in a simple JSON format.
+The program uses the Java properties to configure its runtime. The only parameter flag (`y`), if present, will print to stderr all configured properties with their values, waiting for confirmation to proceed. Otherwise, the query processing will begin, outputting results to stdout in a simple JSON format.
 For example:
 ```shell
 java -Xmx32G -server \
@@ -93,13 +93,3 @@ Depending on the output type, the content of the output type will be different, 
 * `score`: each line of the output file has the format `<qid>TAB<docid>TAB<score>`. The `score` value is ceiled to 5 decimal digits.
 * `docno`: each line of the output file has the format `<qid>TAB<docno>TAB<score>`. The `score` value is ceiled to 5 decimal digits. The `docno` is retrieved from the metaindex.
 * `trec`: each line of the output file has the format `<qid> Q0 <docno> <pos> <score> ISTI` (note the spaces instead of tabs and the 'immutable' strings `Q0` and `ISTI`). The `score` value is ceiled to 5 decimal digits. The `docno` is retrieved from the metaindex. The `pos` value is the position in the returned results array, starting from 0 (i.e., the highest scoring document is in position 0, etc.).
-
-## Experimental features
-
-### Threshold priming
-
-TODO
-
-### Timeout processing
-
-TODO
