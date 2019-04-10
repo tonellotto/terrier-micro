@@ -1,0 +1,9 @@
+merda
+#micro.properties
+results.txt
+python_code.txt
+ext/drop
+python/build/
+python/dist/
+python/terrier_micro.egg-info/
+
