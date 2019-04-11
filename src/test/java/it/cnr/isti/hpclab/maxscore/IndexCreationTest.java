@@ -1,3 +1,23 @@
+/*
+ * Micro query processing framework for Terrier 5
+ *
+ * Copyright (C) 2018-2019 Nicola Tonellotto 
+ *
+ *  This library is free software; you can redistribute it and/or modify it
+ *  under the terms of the GNU Lesser General Public License as published by the Free
+ *  Software Foundation; either version 3 of the License, or (at your option)
+ *  any later version.
+ *
+ *  This library is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ *  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ *  for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program; if not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 package it.cnr.isti.hpclab.maxscore;
 
 import static org.junit.Assert.assertEquals;
@@ -62,18 +82,6 @@ public class IndexCreationTest extends MatchingSetupTest
 
 		MSGenerator.main(argsMS1);
 		MSGenerator.main(argsMS2);
-/*
-		String args[] = new String[3];
-		
-		args[0] = originalIndex.getPath();
-		args[2] = "BM25";
-		
-		args[1] = originalIndex.getPrefix();
-		it.cnr.isti.hpclab.maxscore.Generator.main(args);
-		
-		args[1] = originalIndex.getPrefix() + EliasFano.USUAL_EXTENSION;
-		it.cnr.isti.hpclab.maxscore.Generator.main(args);
-	*/		
 	}
 	
 	private static void loadIndexes()
