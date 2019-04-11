@@ -62,7 +62,8 @@ public class ThresholdQuerySource extends TextQuerySource
 	{
 		mQueryThresholds = new float[mQueries.length];
 		String line = null;
-		int queryCount = 0, qidPos;
+		int queryCount = 0;
+		int qidPos;
 
 		if (MatchingConfiguration.get(Property.THRESHOLD_FILE).length() == 0)
 			throw new IllegalStateException("Threshold file not specified");

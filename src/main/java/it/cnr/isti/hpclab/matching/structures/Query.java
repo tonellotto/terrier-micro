@@ -110,7 +110,7 @@ public class Query
 		checkNotNull(t);
 		String tmp = t.trim();
 		
-		if (tmp.equals(""))
+		if ("".equals(tmp))
 			return;
 
 		int count = mTerms.getInt(tmp);
@@ -201,7 +201,7 @@ public class Query
 		
 		for (String oldTerm: mTerms.keySet()) {
 			String newTerm = tpa.pipelineTerm(oldTerm);
-			if (newTerm != null && !newTerm.equals(""))
+			if (newTerm != null && !"".equals(newTerm))
 				newTerms.put(newTerm, mTerms.getInt(oldTerm));
 		}
 		
@@ -224,7 +224,7 @@ public class Query
 			int num = mTerms.getInt(term);
 			if (num != 1)
 				buf.append(" (x" + num + ")");
-			buf.append(" ");
+			buf.append(' ');
 		}
 		return buf.toString();
 	}

@@ -33,6 +33,8 @@ import it.cnr.isti.hpclab.matching.structures.SearchRequest;
 import it.cnr.isti.hpclab.maxscore.MSGenerator;
 import it.cnr.isti.hpclab.maxscore.structures.MaxScoreIndex;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -164,6 +166,7 @@ public class WandTest extends MatchingSetupTest
 
 		ResultSet current = rs;
 		
+		assertEquals(correct.size(), current.size());
 		MatchingSetupTest.Compare(correct, current);	
 	}
 	
@@ -185,6 +188,7 @@ public class WandTest extends MatchingSetupTest
 
 		ResultSet current = rs;
 		
+		assertEquals(correct.size(), current.size());
 		MatchingSetupTest.Compare(correct, current);	
 	}
 
@@ -206,6 +210,7 @@ public class WandTest extends MatchingSetupTest
 
 		ResultSet current = rs;
 		
+		assertEquals(correct.size(), current.size());
 		MatchingSetupTest.Compare(correct, current);	
 	}
 }

@@ -31,7 +31,11 @@ public class FastLog
 {
 	public static final double LN2  = Math.log( 2 );
 	public static final double LN10 = Math.log( 10 );
-	
+
+	private final int		q, qM1;
+	private final float[]	data;
+	private float			korr;
+
 	/**
 	 *  Calculate the logarithm with base 2.
 	 *
@@ -42,10 +46,6 @@ public class FastLog
 	{
 		return Math.log(val) / LN2;
 	}
-	
-	private final int		q, qM1;
-	private final float[]	data;
-	private float			korr;
 	
 	/**
 	 * 	Create a new logarithm calculation instance. This will
