@@ -43,6 +43,7 @@ class MSMapper implements Function<TermPartition,Object>
 	private final String src_index_prefix;
 	private final String wm_name;
 	
+	// shared array
 	private final float[] msa;
 	
 	public MSMapper(final String src_index_path, final String src_index_prefix, final String wm_name, final float[] msa) 

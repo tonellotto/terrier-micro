@@ -186,7 +186,7 @@ public class TopQueue implements java.io.Serializable
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void readObject(java.io.ObjectInputStream s) throws java.io.IOException, ClassNotFoundException 
+	private void readObject(ObjectInputStream s) throws java.io.IOException, ClassNotFoundException 
 	{
 		s.defaultReadObject();
 		k = s.readInt();

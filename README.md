@@ -9,8 +9,15 @@ This package is [free software](http://www.gnu.org/philosophy/free-sw.html) dist
 
 ## Pre-requisites
 
-Terrier 5.0 is required.
-Elias-Fano compression for Terrier 5 is optional.
+[Elias-Fano compression for Terrier](https://github.com/tonellotto/terrier-ef) is required for testing purposes, but it is not explicitly required for using the Terrier Micro package.
+
+To install the Elias-Fano compression for Terrier package on your local machine, please run the following commands.
+
+```bash
+git clone https://github.com/tonellotto/terrier-ef
+cd terrier-ef
+mvn install
+```
 
 ## Usage
 
