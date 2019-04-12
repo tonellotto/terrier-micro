@@ -1,4 +1,4 @@
-# Terrier 5 Micro 
+# Terrier Micro
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/be331c1b98ca42b588db6115c548df07)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tonellotto/terrier-micro&amp;utm_campaign=Badge_Grade)
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
@@ -11,21 +11,23 @@ This package is [free software](http://www.gnu.org/philosophy/free-sw.html) dist
 
 [Elias-Fano compression for Terrier](https://github.com/tonellotto/terrier-ef) is required for testing purposes, but it is not explicitly required for using the Terrier Micro package.
 
-To install the Elias-Fano compression for Terrier package on your local machine, please run the following commands.
+To install the Elias-Fano compression for Terrier package (version 1.5.1) on your local machine, please run the following commands.
 
 ```bash
 git clone https://github.com/tonellotto/terrier-ef
 cd terrier-ef
+git checkout 1.5.1
 mvn install
 ```
 
 ## Usage
 
-If not already available, e.g. from Maven Central, you should git clone and install terrier-micro, version 1.5:
+If not already available, e.g. from Maven Central, you should git clone and install Terrier Micro (version 1.5.1):
 
 ```bash
 git clone https://github.com/tonellotto/terrier-micro
 cd terrier-micro
+git checkout 1.5.1
 mvn -DskipTests clean install appassembler:assemble
 ```
 
