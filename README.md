@@ -30,4 +30,7 @@ mvn -DskipTests clean install appassembler:assemble
 ```
 
 The main script to perform batch query processing is the [retrieve](./docs/retrieve.md) tool.
+
+If you want to use all available processors on your machine to perform batch query processing, use the [parallel retrieve](./docs/parallel_retrieve.md) tool.
+
 Two other scripts are provided, to support advanced query processing strategies: the [ms-generate](./docs/ms-gen.md) and [bmw-generate](./docs/bmw-gen.md) tools.
