@@ -36,3 +36,7 @@ The main script to perform batch query processing is the [retrieve](./docs/retri
 If you want to use all available processors on your machine to perform batch query processing, use the [parallel retrieve](./docs/parallel_retrieve.md) tool.
 
 Two other scripts are provided, to support advanced query processing strategies: the [ms-generate](./docs/ms-gen.md) and [bmw-generate](./docs/bmw-gen.md) tools.
+
+## Credits
+
+Developed by Nicola Tonellotto, ISTI-CNR. Contributions by Craig Macdonald, University of Glasgow, and Matteo Catena, ISTI-CNR.
