@@ -37,7 +37,7 @@ If you want to use all available processors on your machine to perform batch que
 
 Two other scripts are provided, to support advanced query processing strategies: the [ms-generate](./docs/ms-gen.md) and [bmw-generate](./docs/bmw-gen.md) tools.
 
-#Usage from within Terrier
+## Usage from within Terrier
 
 Following the previous two steps, you can also use terrier-micro from within the familiar `bin/terrier` commandline scripts.
 
