@@ -104,25 +104,27 @@ public abstract class Manager implements Closeable
 		mMatchingAlgorithm.setup(this);
 	}
 
-	protected void createWeigthingModel(String weightingModelClassName) 
+	protected void createWeigthingModel(final String weightingModelClassName) 
 	{
 		checkNotNull(weightingModelClassName);
 		try {
 			if (weightingModelClassName.indexOf('.') == -1)
-				weightingModelClassName = MatchingConfiguration.get(Property.DEFAULT_NAMESPACE) + "structures.model." + weightingModelClassName;
-			mWeightingModel = (WeightingModel) (Class.forName(weightingModelClassName).asSubclass(WeightingModel.class).getConstructor().newInstance());
+				mWeightingModel = (WeightingModel) (Class.forName(MatchingConfiguration.get(Property.DEFAULT_NAMESPACE) + "structures.model." + weightingModelClassName).asSubclass(WeightingModel.class).getConstructor().newInstance());
+			else
+				mWeightingModel = (WeightingModel) (Class.forName(weightingModelClassName).asSubclass(WeightingModel.class).getConstructor().newInstance());
 		} catch (Exception e) {
 			LOGGER.error("Problem loading weighting model (" + weightingModelClassName + "): ", e);
 		}
 	}
 
-	protected void createMatchingAlgorithm(String matchingAlgorithmClassName) 
+	protected void createMatchingAlgorithm(final String matchingAlgorithmClassName) 
 	{
 		checkNotNull(matchingAlgorithmClassName);
 		try {
 			if (matchingAlgorithmClassName.indexOf('.') == -1)
-				matchingAlgorithmClassName = MatchingConfiguration.get(Property.DEFAULT_NAMESPACE) + matchingAlgorithmClassName;
-			mMatchingAlgorithm = (MatchingAlgorithm) (Class.forName(matchingAlgorithmClassName).asSubclass(MatchingAlgorithm.class).getConstructor().newInstance());
+				mMatchingAlgorithm = (MatchingAlgorithm) (Class.forName(MatchingConfiguration.get(Property.DEFAULT_NAMESPACE) + matchingAlgorithmClassName).asSubclass(MatchingAlgorithm.class).getConstructor().newInstance());
+			else
+				mMatchingAlgorithm = (MatchingAlgorithm) (Class.forName(matchingAlgorithmClassName).asSubclass(MatchingAlgorithm.class).getConstructor().newInstance());
 		} catch (Exception e) {
 			LOGGER.error("Problem loading matching algorithm (" + matchingAlgorithmClassName + "): ", e);
 		}

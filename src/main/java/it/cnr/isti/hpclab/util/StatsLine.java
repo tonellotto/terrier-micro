@@ -75,7 +75,7 @@ public class StatsLine
 			if (i != values.length - 1)
 				buf.append(", ");
 		}
-		buf.append("]");
+		buf.append(']');
 
 		return this;
 	}
@@ -96,7 +96,7 @@ public class StatsLine
 			if (i != values.length - 1)
 				buf.append(", ");
 		}
-		buf.append("]");
+		buf.append(']');
 
 		return this;
 	}

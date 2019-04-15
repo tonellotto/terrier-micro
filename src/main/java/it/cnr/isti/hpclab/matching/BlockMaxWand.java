@@ -103,7 +103,8 @@ public class BlockMaxWand implements MatchingAlgorithm
             if (heap.wouldEnter(blockMaxScore)) {
             	if (pivot_id == enums[0].posting.getId()) {
             		manager.partiallyProcessedDocuments++;
-            		float score = 0.0f, p_score = 0.0f;
+            		float score = 0.0f;
+            		float p_score = 0.0f;
             		for (int i = 0; i <= pivot; ++i) {
             			score += (p_score = wm.score(1, enums[i].posting, enums[i].entry));
             			manager.processedPostings++;

@@ -21,6 +21,7 @@
 package it.cnr.isti.hpclab.matching.structures;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -47,44 +48,53 @@ public class TopQueueTest
 		
 		original_queue = new TopQueue(0);
 		copied_queue = copy(original_queue);
+		assertNotNull(copied_queue);
         compare(original_queue, copied_queue);
         
 		original_queue = new TopQueue(0, 6.66f);
 		copied_queue = copy(original_queue);
+		assertNotNull(copied_queue);
         compare(original_queue, copied_queue);
 	}
 
 	@Test public void serialization_1() throws IOException, ClassNotFoundException
 	{
-		TopQueue original_queue, copied_queue;
+		TopQueue original_queue;
+		TopQueue copied_queue;
 		
 		original_queue = new TopQueue(1);
 		copied_queue = copy(original_queue);
+		assertNotNull(copied_queue);
         compare(original_queue, copied_queue);
         
 		original_queue = new TopQueue(1, 6.66f);
 		copied_queue = copy(original_queue);
+		assertNotNull(copied_queue);
         compare(original_queue, copied_queue);
         
 		original_queue = new TopQueue(1);
 		original_queue.insert(new Result(1, 1.1f));
 		copied_queue = copy(original_queue);
+		assertNotNull(copied_queue);
         compare(original_queue, copied_queue);
         
 		original_queue = new TopQueue(1, 6.66f);
 		original_queue.insert(new Result(1, 1.1f));
 		copied_queue = copy(original_queue);
+		assertNotNull(copied_queue);
         compare(original_queue, copied_queue);
         
 		original_queue = new TopQueue(1, 6.66f);
 		original_queue.insert(new Result(1, 7.1f));
 		copied_queue = copy(original_queue);
+		assertNotNull(copied_queue);
         compare(original_queue, copied_queue);
         
 		original_queue = new TopQueue(1, 6.66f);
 		original_queue.insert(new Result(1, 7.1f));
 		original_queue.insert(new Result(1, 6.1f));
 		copied_queue = copy(original_queue);
+		assertNotNull(copied_queue);
         compare(original_queue, copied_queue);
 	}
 
@@ -116,7 +126,8 @@ public class TopQueueTest
 		assertEquals(q1.threshold(), q2.threshold(), 1e-6);
 		assertEquals(q1.size(), q2.size());
 		
-		Result r1, r2;
+		Result r1;
+		Result r2;
 		while (!q1.top().isEmpty() && ! q2.top().isEmpty()) {
 			r1 = q1.top().dequeue();
 			r2 = q2.top().dequeue();

@@ -92,7 +92,8 @@ public class Query
 		this.mMetadata     = new Object2ObjectArrayMap<>();
 		this.mMetadata_str = new Object2ObjectArrayMap<>();
 		
-		int pos = 0, end;
+		int pos = 0;
+		int  end;
         while ((end = queryText.indexOf(' ', pos)) >= 0) {
         	addTerm(queryText.substring(pos, end));
             pos = end + 1;

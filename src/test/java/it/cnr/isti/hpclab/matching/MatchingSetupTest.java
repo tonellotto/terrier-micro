@@ -66,10 +66,6 @@ public abstract class MatchingSetupTest
 	protected static String terrierHome;
 	protected static String terrierEtc;
 	
-	public MatchingSetupTest() 
-	{
-	}
-	
 	public static void makeEnvironment() throws Exception
 	{
 		makeEnvironment(false);
@@ -118,11 +114,11 @@ public abstract class MatchingSetupTest
 		assertTrue(Files.delete(terrierEtc + "/terrier.properties"));
 		assertTrue(Files.rename(terrierEtc+ "/terrier.properties.test", terrierEtc + "/terrier.properties"));		
 		
-		org.terrier.utility.ApplicationSetup.bootstrapInitialisation();
+		ApplicationSetup.bootstrapInitialisation();
 
-		assertEquals(terrierHome, org.terrier.utility.ApplicationSetup.TERRIER_HOME);
-		assertEquals(terrierEtc,  org.terrier.utility.ApplicationSetup.TERRIER_ETC);
-		assertEquals(terrierEtc,  org.terrier.utility.ApplicationSetup.TERRIER_INDEX_PATH);
+		assertEquals(terrierHome, ApplicationSetup.TERRIER_HOME);
+		assertEquals(terrierEtc,  ApplicationSetup.TERRIER_ETC);
+		assertEquals(terrierEtc,  ApplicationSetup.TERRIER_INDEX_PATH);
 		
 		URL url = Query.class.getResource("/stopword-list.txt");
 		System.setProperty("stopwords.filename", url.toString());
@@ -135,7 +131,7 @@ public abstract class MatchingSetupTest
 		if (fs != null)
 			for (File f : fs)
 				f.delete();
-		org.terrier.utility.ApplicationSetup.clearAllProperties();
+		ApplicationSetup.clearAllProperties();
 		tmpFolder.delete();
 	}
 
