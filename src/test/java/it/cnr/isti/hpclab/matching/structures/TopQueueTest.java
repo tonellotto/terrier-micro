@@ -44,7 +44,8 @@ public class TopQueueTest
 	
 	@Test public void serialization_0() throws IOException, ClassNotFoundException
 	{
-		TopQueue original_queue, copied_queue;
+		TopQueue original_queue;
+		TopQueue copied_queue;
 		
 		original_queue = new TopQueue(0);
 		copied_queue = copy(original_queue);

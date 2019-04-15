@@ -177,7 +177,7 @@ public class TopQueue implements java.io.Serializable
 		return buf.toString();
 	}
 	
-	private void writeObject(ObjectOutputStream s) throws java.io.IOException 
+	private void writeObject(ObjectOutputStream s) throws IOException 
 	{
 		s.defaultWriteObject();
 		s.writeInt(k);
