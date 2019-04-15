@@ -23,6 +23,7 @@ package it.cnr.isti.hpclab.matching;
 import it.cnr.isti.hpclab.annotations.Managed;
 import it.cnr.isti.hpclab.manager.Manager;
 import it.cnr.isti.hpclab.manager.MaxScoreManager;
+import it.cnr.isti.hpclab.manager.Tuple;
 import it.cnr.isti.hpclab.matching.structures.Result;
 
 import it.cnr.isti.hpclab.matching.structures.TopQueue;
@@ -48,7 +49,7 @@ public class MaxScore implements MatchingAlgorithm
 	@Override
 	public long match(final int from, final int to) throws IOException 
 	{
-		final ObjectList<MaxScoreManager.Tuple> ordered_enums = manager.ordered_enums;
+		final ObjectList<Tuple> ordered_enums = manager.ordered_enums;
 		final float upper_bounds[] = manager.upper_bounds;
 		final TopQueue heap = manager.heap;
 		final WeightingModel wm = manager.mWeightingModel;

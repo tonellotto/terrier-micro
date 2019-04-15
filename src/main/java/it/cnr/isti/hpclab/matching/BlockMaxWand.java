@@ -22,6 +22,7 @@ package it.cnr.isti.hpclab.matching;
 import it.cnr.isti.hpclab.annotations.Managed;
 import it.cnr.isti.hpclab.manager.BlockMaxWandManager;
 import it.cnr.isti.hpclab.manager.Manager;
+import it.cnr.isti.hpclab.manager.Tuple;
 import it.cnr.isti.hpclab.matching.structures.Result;
 import it.cnr.isti.hpclab.matching.structures.TopQueue;
 import it.cnr.isti.hpclab.matching.structures.WeightingModel;
@@ -47,7 +48,7 @@ public class BlockMaxWand implements MatchingAlgorithm
 	@Override
 	public long match(final int from, final int to) throws IOException 
 	{		
-		BlockMaxWandManager.Tuple[] enums = manager.enums;
+		Tuple[] enums = manager.enums;
 		final TopQueue heap = manager.heap;
 		final WeightingModel wm = manager.mWeightingModel;
 

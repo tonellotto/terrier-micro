@@ -35,7 +35,6 @@ import it.cnr.isti.hpclab.matching.structures.TopQueue;
 import it.cnr.isti.hpclab.matching.structures.Query.RuntimeProperty;
 import it.cnr.isti.hpclab.matching.structures.resultset.EmptyResultSet;
 import it.cnr.isti.hpclab.matching.structures.resultset.ScoredResultSet;
-import it.cnr.isti.hpclab.maxscore.structures.BlockEnumerator;
 import it.cnr.isti.hpclab.maxscore.structures.BlockMaxScoreIndex;
 import it.cnr.isti.hpclab.maxscore.structures.MaxScoreIndex;
 
@@ -112,36 +111,6 @@ public class BlockMaxWandManager extends Manager
         	pair.posting.close();
 	}
 
-	public static class Tuple implements Comparable<Tuple>
-	{
-		public String term = null;
-		public IterablePosting posting = null;
-		public LexiconEntry entry = null;
-		public float maxscore;
-		public BlockEnumerator blockEnum = null;
-		
-		public Tuple(final String term, final IterablePosting posting, final LexiconEntry entry, final float maxscore, final BlockEnumerator blockEnum)
-		{
-			this.term = term;
-			this.posting = posting;
-			this.entry = entry;
-			this.maxscore = maxscore;
-			this.blockEnum = blockEnum;
-		}
-		
-		@Override
-		public String toString()
-		{
-			return posting.toString() + ", [" + entry.getDocumentFrequency() + "," + entry.getFrequency() + "] <" + maxscore + ">"  + " {" + blockEnum + "}"; 
-		}
-
-		@Override
-		public int compareTo(Tuple that) 
-		{
-			return Integer.compare(this.posting.getId(), that.posting.getId());
-		}
-	}
-
 	protected void look(final SearchRequest searchRequest) throws IOException
 	{
 		MaxScoreIndex maxScoreIndex = (MaxScoreIndex) mIndex.getIndexStructure("maxscore");
@@ -161,7 +130,7 @@ public class BlockMaxWandManager extends Manager
 			} else {
 				IterablePosting ip = mIndex.getInvertedIndex().getPostings(le);
 				ip.next();
-				enums_with_maxscore.add(new Tuple(term, ip, le, maxScoreIndex.getMaxScore(le.getTermId()), blockMaxScoreIndex.get(le.getTermId())));
+				enums_with_maxscore.add(new Tuple(term, ip, le, maxScoreIndex.getMaxScore(le.getTermId()), blockMaxScoreIndex.get(le.getTermId()), Tuple.SORT_BY_DOCID));
 			}
 		}
 		
