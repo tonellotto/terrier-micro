@@ -31,15 +31,17 @@ import java.util.Arrays;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Options;
 import org.apache.commons.io.FilenameUtils;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ParserProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.terrier.structures.Index;
 import org.terrier.structures.IndexOnDisk;
+import org.terrier.utility.ApplicationSetup;
 
 import it.cnr.isti.hpclab.ef.TermPartition;
 import it.cnr.isti.hpclab.matching.structures.WeightingModel;
@@ -68,6 +70,48 @@ public class BMWGenerator
 	    
 	    @Option(name = "-p", metaVar = "[Number]", required = false, usage = "Parallelism degree")
 	    public String parallelism;	    
+	}
+
+	public static class Command extends org.terrier.applications.CLITool.CLIParsedCLITool {
+
+		protected Options getOptions()
+		{
+			Options options = super.getOptions();
+			options.addOption(org.apache.commons.cli.Option.builder("b")
+					.argName("blocks")
+					.hasArgs()
+					.desc("Block Size")
+					.required()
+					.build());
+			options.addOption(org.apache.commons.cli.Option.builder("p")
+					.argName("parallel")
+					.desc("Parallelism degree")
+					.build());
+			return options;
+		}
+		
+		@Override
+		public int run(CommandLine line) throws Exception {
+			Args args = new Args();
+			if (line.hasOption("b"))
+				args.bs = line.getOptionValue("b");
+			args.index = ApplicationSetup.TERRIER_INDEX_PATH + "/" + ApplicationSetup.TERRIER_INDEX_PREFIX;
+			if (line.hasOption("p"))
+				args.parallelism = line.getOptionValue("p");
+			execute(args);
+			return 0;
+		}
+
+		@Override
+		public String commandname() {
+			return "micro-bmw-generator";
+		}
+
+		@Override
+		public String helpsummary() {
+			return "generates a bmw datastructure";
+		}
+
 	}
 
 	public BMWGenerator(final String src_index_path, final String src_index_prefix) throws Exception 
@@ -99,8 +143,6 @@ public class BMWGenerator
 	
 	public static void main(String[] argv)
 	{
-		IndexOnDisk.setIndexLoadingProfileAsRetrieval(false);
-		
 		Args args = new Args();
 		CmdLineParser parser = new CmdLineParser(args, ParserProperties.defaults().withUsageWidth(90));
 		try {
@@ -110,7 +152,12 @@ public class BMWGenerator
 			parser.printUsage(System.err);
 			return;
 		}
-		
+		execute(args);
+	}
+	
+	public static void execute(Args args) {
+
+		IndexOnDisk.setIndexLoadingProfileAsRetrieval(false);
 		final String src_index_path = FilenameUtils.getFullPath(args.index);
 		final String src_index_prefix = FilenameUtils.getBaseName(args.index);
 		

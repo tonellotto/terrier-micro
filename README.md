@@ -31,3 +31,17 @@ mvn -DskipTests clean install appassembler:assemble
 
 The main script to perform batch query processing is the [retrieve](./docs/retrieve.md) tool.
 Two other scripts are provided, to support advanced query processing strategies: the [ms-generate](./docs/ms-gen.md) and [bmw-generate](./docs/bmw-gen.md) tools.
+
+#Usage from within Terrier
+
+Following the previous two steps, you can also use terrier-micro from within the familiar `bin/terrier` commandline scripts.
+
+Firstly, ensure that terrier-ef and terrier-micro are installed on your machine. Then, configure Terrier's Maven resolver to import these by appending the following line to your terrier.properties file:
+
+    terrier.mvn.coords=it.cnr.isti.hpclab:terrier-micro:1.5.1
+    
+You can then use terrier-ef and terrier-micro tools, as folllows: 
+
+    bin/terrier ef-recompress $PWD/var/index ef
+    bin/terrier micro-ms-generator -I $PWD/var/index/ef.properties -w BM25
+    bin/terrier micro-bmw-generator -I $PWD/var/index/ef.properties -b 512

@@ -25,13 +25,33 @@ import it.cnr.isti.hpclab.MatchingConfiguration.Property;
 import java.io.IOException;
 import java.util.Scanner;
 
+import org.apache.commons.cli.CommandLine;
 import org.apache.log4j.Logger;
 import org.terrier.utility.ApplicationSetup;
 
-public class Retrieve 
-{
+public class Retrieve {
 	static {
-		ApplicationSetup.setProperty("terrier.index.retrievalLoadingProfile.default","false");
+		ApplicationSetup.setProperty("terrier.index.retrievalLoadingProfile.default", "false");
+	}
+
+	public static class Command extends org.terrier.applications.CLITool.CLIParsedCLITool {
+
+		@Override
+		public int run(CommandLine line) throws Exception {
+			Retrieve.main(line.getArgs());
+			return 0;
+		}
+
+		@Override
+		public String commandname() {
+			return "micro-retrieve";
+		}
+
+		@Override
+		public String helpsummary() {
+			return "performs batch retrieval in terrier-micro";
+		}
+
 	}
 
 	public static void main(String args[]) throws IOException

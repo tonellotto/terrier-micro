@@ -31,46 +31,46 @@ import java.util.Arrays;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Options;
 import org.apache.commons.io.FilenameUtils;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ParserProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.terrier.structures.Index;
 import org.terrier.structures.IndexOnDisk;
+import org.terrier.utility.ApplicationSetup;
 
 import it.cnr.isti.hpclab.ef.TermPartition;
 import it.cnr.isti.hpclab.matching.structures.WeightingModel;
 import it.cnr.isti.hpclab.maxscore.structures.MaxScoreIndex;
 import it.unimi.dsi.logging.ProgressLogger;
 
-public class MSGenerator 
-{
+public class MSGenerator {
 	protected static Logger LOGGER = LoggerFactory.getLogger(MSGenerator.class);
 	protected final static ProgressLogger pl = new ProgressLogger(LOGGER, 30, TimeUnit.SECONDS, "term");
-	
+
 	private final int num_terms;
-	
-	public static final class Args 
-	{
-	    // required arguments
 
-	    @Option(name = "-index",  metaVar = "[String]", required = true, usage = "Input Index")
-	    public String index;
+	public static final class Args {
+		// required arguments
 
-	    @Option(name = "-wm",  metaVar = "[String]", required = true, usage = "Weighting Model")
-	    public String wm_name;
+		@Option(name = "-index", metaVar = "[String]", required = true, usage = "Input Index")
+		public String index;
 
-	    // optional arguments
-	    
-	    @Option(name = "-p", metaVar = "[Number]", required = false, usage = "Parallelism degree")
-	    public String parallelism;	    
+		@Option(name = "-wm", metaVar = "[String]", required = true, usage = "Weighting Model")
+		public String wm_name;
+
+		// optional arguments
+
+		@Option(name = "-p", metaVar = "[Number]", required = false, usage = "Parallelism degree")
+		public String parallelism;
 	}
 
-	public MSGenerator(final String src_index_path, final String src_index_prefix, final String wm_name) throws Exception 
-	{	
+	public MSGenerator(final String src_index_path, final String src_index_prefix, final String wm_name)
+			throws Exception {
 		// Load input index
 		IndexOnDisk src_index = Index.createIndex(src_index_path, src_index_prefix);
 		if (Index.getLastIndexLoadError() != null) {
@@ -80,24 +80,61 @@ public class MSGenerator
 		src_index.close();
 		LOGGER.info("Input index contains " + this.num_terms + " terms");
 		pl.expectedUpdates = num_terms;
-		
-		// check dst maxscore index does not exist 
-		if (Files.exists(Paths.get(src_index_path + File.separator + src_index_prefix + MaxScoreIndex.USUAL_EXTENSION))) {
-			throw new IllegalArgumentException("Index directory " + src_index_path + " already contains an index with prefix " + src_index_prefix);
-		}		
-		
+
+		// check dst maxscore index does not exist
+		if (Files.exists(
+				Paths.get(src_index_path + File.separator + src_index_prefix + MaxScoreIndex.USUAL_EXTENSION))) {
+			throw new IllegalArgumentException(
+					"Index directory " + src_index_path + " already contains an index with prefix " + src_index_prefix);
+		}
+
 		// check wm exists
 		try {
-			@SuppressWarnings("unused")	WeightingModel mModel = (WeightingModel) (Class.forName(wm_name).asSubclass(WeightingModel.class).getConstructor().newInstance());
+			@SuppressWarnings("unused")
+			WeightingModel mModel = (WeightingModel) (Class.forName(wm_name).asSubclass(WeightingModel.class)
+					.getConstructor().newInstance());
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Problem loading weighting model (" + wm_name + ")");
 		}
 	}
-	
+
+	public static class Command extends org.terrier.applications.CLITool.CLIParsedCLITool {
+
+		protected Options getOptions() {
+			Options options = super.getOptions();
+			options.addOption(org.apache.commons.cli.Option.builder("w").argName("wmodel").hasArgs()
+					.desc("weighting model").required().build());
+			options.addOption(
+					org.apache.commons.cli.Option.builder("p").argName("parallel").desc("Parallelism degree").build());
+			return options;
+		}
+
+		@Override
+		public int run(CommandLine line) throws Exception {
+			Args args = new Args();
+			if (line.hasOption("w"))
+				args.wm_name = line.getOptionValue("w");
+			args.index = ApplicationSetup.TERRIER_INDEX_PATH + "/" + ApplicationSetup.TERRIER_INDEX_PREFIX;
+			if (line.hasOption("p"))
+				args.parallelism = line.getOptionValue("p");
+			execute(args);
+			return 0;
+		}
+
+		@Override
+		public String commandname() {
+			return "micro-ms-generator";
+		}
+
+		@Override
+		public String helpsummary() {
+			return "generates a maxscore datastructure";
+		}
+
+	}
+
 	public static void main(String[] argv)
 	{
-		IndexOnDisk.setIndexLoadingProfileAsRetrieval(false);
-		
 		Args args = new Args();
 		CmdLineParser parser = new CmdLineParser(args, ParserProperties.defaults().withUsageWidth(90));
 		try {
@@ -107,7 +144,12 @@ public class MSGenerator
 			parser.printUsage(System.err);
 			return;
 		}
-		
+		execute(args);
+	}
+	
+	public static void execute(Args args) {
+
+		IndexOnDisk.setIndexLoadingProfileAsRetrieval(false);
 		final String src_index_path = FilenameUtils.getFullPath(args.index);
 		final String src_index_prefix = FilenameUtils.getBaseName(args.index);
 		
