@@ -108,34 +108,6 @@ public class WandManager extends Manager
         	pair.posting.close();
 	}
 	
-	public static class Tuple implements Comparable<Tuple>
-	{
-		public String term = null;
-		public IterablePosting posting = null;
-		public LexiconEntry entry = null;
-		public float maxscore;
-		
-		public Tuple(final String term, final IterablePosting posting, final LexiconEntry entry, final float maxscore)
-		{
-			this.term = term;
-			this.posting = posting;
-			this.entry = entry;
-			this.maxscore = maxscore;
-		}
-		
-		@Override
-		public String toString()
-		{
-			return posting.toString() + ", [" + entry.getDocumentFrequency() + "," + entry.getFrequency() + "] <" + maxscore + ">"; 
-		}
-				
-		@Override
-		public int compareTo(Tuple that) 
-		{
-			return Integer.compare(this.posting.getId(), that.posting.getId());
-		}
-	}
-
 	protected void look(final SearchRequest searchRequest) throws IOException
 	{
 		MaxScoreIndex maxScoreIndex = (MaxScoreIndex) mIndex.getIndexStructure("maxscore");
@@ -153,7 +125,7 @@ public class WandManager extends Manager
 			} else {
 				IterablePosting ip = mIndex.getInvertedIndex().getPostings(le);
 				ip.next();
-				enums.add(new Tuple(term, ip, le, maxScoreIndex.getMaxScore(le.getTermId())));
+				enums.add(new Tuple(term, ip, le, maxScoreIndex.getMaxScore(le.getTermId()), Tuple.SORT_BY_DOCID));
 			}
 		}
 		

@@ -126,7 +126,7 @@ public class MaxScoreTest extends MatchingSetupTest
 		if (Files.exists(Paths.get(terrierEtc + File.separator + "data.ef" + MaxScoreIndex.USUAL_EXTENSION)))
 			Files.delete(Paths.get(terrierEtc + File.separator + "data.ef" + MaxScoreIndex.USUAL_EXTENSION));
 		String argsMS[] = {"-index", terrierEtc + File.separator + "data.ef.properties",
-						 "-wm", (model.equals("BM25Fast")) ? "BM25": model,
+						 "-wm", ("BM25Fast".equals(model)) ? "BM25": model,
 				 		 "-p", Integer.toString(3)};
 
 		MSGenerator.main(argsMS);

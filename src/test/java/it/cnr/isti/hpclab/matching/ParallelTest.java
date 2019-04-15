@@ -52,6 +52,15 @@ import it.cnr.isti.hpclab.parallel.ParallelRetrieve;
 @RunWith(value = Parameterized.class)
 public class ParallelTest extends MatchingSetupTest
 {
+	private static final String query5 = "page new 1996 1 mail";
+	private static final String query4 = "page new 1996 1";
+	private static final String query3 = "page new 1996";
+	private static final String query1 = "view";
+	private static final String query2 = "top view";
+
+	private String query;
+	private String model;
+
 	private static class Pair implements Comparable<Pair>
 	{
 		public String docno;
@@ -70,15 +79,6 @@ public class ParallelTest extends MatchingSetupTest
 		}
 		
 	}
-
-	private static final String query5 = "page new 1996 1 mail";
-	private static final String query4 = "page new 1996 1";
-	private static final String query3 = "page new 1996";
-	private static final String query1 = "view";
-	private static final String query2 = "top view";
-
-	private String query;
-	private String model;
 	
 	@Parameters(name = "{index}: query={0} model={1}")
 	public static Collection<Object[]> models_queries()
@@ -173,7 +173,8 @@ public class ParallelTest extends MatchingSetupTest
 		
 		assertEquals(original.size(), parallel.size());
 		
-		Pair p1, p2;
+		Pair p1;
+		Pair p2;
 		for (int i = 0; i < original.size(); ++i) {
 			p1 = original.get(i);
 			p2 = parallel.get(i);

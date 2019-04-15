@@ -177,7 +177,7 @@ public class TopQueue implements java.io.Serializable
 		return buf.toString();
 	}
 	
-	private void writeObject(java.io.ObjectOutputStream s) throws java.io.IOException 
+	private void writeObject(ObjectOutputStream s) throws IOException 
 	{
 		s.defaultWriteObject();
 		s.writeInt(k);
@@ -186,7 +186,7 @@ public class TopQueue implements java.io.Serializable
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void readObject(ObjectInputStream s) throws java.io.IOException, ClassNotFoundException 
+	private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException 
 	{
 		s.defaultReadObject();
 		k = s.readInt();
