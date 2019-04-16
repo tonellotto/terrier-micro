@@ -54,7 +54,7 @@ public class MSGenerator {
 
 	private final int num_terms;
 
-	public static final class Args {
+	public static final class MSArgs {
 		// required arguments
 
 		@Option(name = "-index", metaVar = "[String]", required = true, usage = "Input Index")
@@ -111,7 +111,7 @@ public class MSGenerator {
 
 		@Override
 		public int run(CommandLine line) throws Exception {
-			Args args = new Args();
+			MSArgs args = new MSArgs();
 			if (line.hasOption("w"))
 				args.wm_name = line.getOptionValue("w");
 			args.index = ApplicationSetup.TERRIER_INDEX_PATH + "/" + ApplicationSetup.TERRIER_INDEX_PREFIX;
@@ -135,7 +135,7 @@ public class MSGenerator {
 
 	public static void main(String[] argv)
 	{
-		Args args = new Args();
+		MSArgs args = new MSArgs();
 		CmdLineParser parser = new CmdLineParser(args, ParserProperties.defaults().withUsageWidth(90));
 		try {
 			parser.parseArgument(argv);
@@ -147,7 +147,7 @@ public class MSGenerator {
 		execute(args);
 	}
 	
-	public static void execute(Args args) {
+	public static void execute(MSArgs args) {
 
 		IndexOnDisk.setIndexLoadingProfileAsRetrieval(false);
 		final String src_index_path = FilenameUtils.getFullPath(args.index);

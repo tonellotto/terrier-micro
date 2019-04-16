@@ -57,7 +57,7 @@ public class BMWGenerator
 	private final int num_terms;
 	private final String wm_name;
 	
-	public static final class Args 
+	public static final class BMWArgs 
 	{
 	    // required arguments
 
@@ -93,7 +93,7 @@ public class BMWGenerator
 		
 		@Override
 		public int run(CommandLine line) throws Exception {
-			Args args = new Args();
+			BMWArgs args = new BMWArgs();
 			if (line.hasOption("b"))
 				args.bs = line.getOptionValue("b");
 			args.index = ApplicationSetup.TERRIER_INDEX_PATH + "/" + ApplicationSetup.TERRIER_INDEX_PREFIX;
@@ -148,7 +148,7 @@ public class BMWGenerator
 	
 	public static void main(String[] argv)
 	{
-		Args args = new Args();
+		BMWArgs args = new BMWArgs();
 		CmdLineParser parser = new CmdLineParser(args, ParserProperties.defaults().withUsageWidth(90));
 		try {
 			parser.parseArgument(argv);
@@ -160,7 +160,7 @@ public class BMWGenerator
 		execute(args);
 	}
 	
-	public static void execute(Args args) {
+	public static void execute(BMWArgs args) {
 
 		IndexOnDisk.setIndexLoadingProfileAsRetrieval(false);
 		final String src_index_path = FilenameUtils.getFullPath(args.index);
