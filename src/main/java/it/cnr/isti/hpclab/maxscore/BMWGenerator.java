@@ -46,6 +46,7 @@ import org.terrier.utility.ApplicationSetup;
 import it.cnr.isti.hpclab.ef.TermPartition;
 import it.cnr.isti.hpclab.matching.structures.WeightingModel;
 import it.cnr.isti.hpclab.maxscore.structures.BlockMaxScoreIndex;
+import it.cnr.isti.hpclab.maxscore.structures.MaxScoreIndex;
 import it.unimi.dsi.logging.ProgressLogger;
 
 public class BMWGenerator 
@@ -111,7 +112,6 @@ public class BMWGenerator
 		public String helpsummary() {
 			return "generates a bmw datastructure";
 		}
-
 	}
 
 	public BMWGenerator(final String src_index_path, final String src_index_prefix) throws Exception 
@@ -128,7 +128,12 @@ public class BMWGenerator
 		LOGGER.info("Input index contains " + this.num_terms + " terms");
 		pl.expectedUpdates = num_terms;
 		
-		// check dst maxscore index does not exist 
+		// check dst maxscore index does exist
+		if (!Files.exists(Paths.get(src_index_path + File.separator + src_index_prefix + MaxScoreIndex.USUAL_EXTENSION))) {
+			throw new IllegalArgumentException("Index directory " + src_index_path + " does not contain a max score index with prefix " + src_index_prefix + ". Please generate one first.");
+		}
+
+		// check dst blockindex index does not exist 
 		if (Files.exists(Paths.get(src_index_path + File.separator + src_index_prefix + BlockMaxScoreIndex.STRUCTURE_NAME + BlockMaxScoreIndex.DOCID_EXT))) {
 			throw new IllegalArgumentException("Index directory " + src_index_path + " already contains an index with prefix " + src_index_prefix);
 		}		
