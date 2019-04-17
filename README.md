@@ -9,7 +9,7 @@ This package is [free software](http://www.gnu.org/philosophy/free-sw.html) dist
 
 ## Pre-requisites
 
-[Elias-Fano compression for Terrier](https://github.com/tonellotto/terrier-ef) is required for testing purposes, but it is not explicitly required for using the Terrier Micro package.
+[Elias-Fano compression for Terrier](https://github.com/tonellotto/terrier-ef) is required for testing purposes or if you plan to use it in your experiments, but it is not explicitly required for using the Terrier Micro package.
 
 To install the Elias-Fano compression for Terrier package (version 1.5.1) on your local machine, please run the following commands.
 
@@ -17,7 +17,7 @@ To install the Elias-Fano compression for Terrier package (version 1.5.1) on you
 git clone https://github.com/tonellotto/terrier-ef
 cd terrier-ef
 git checkout 1.5.1
-mvn install
+mvn install appassembler:assemble
 ```
 
 ## Usage
@@ -28,7 +28,7 @@ If not already available, e.g. from Maven Central, you should git clone and inst
 git clone https://github.com/tonellotto/terrier-micro
 cd terrier-micro
 git checkout 1.5.1
-mvn -DskipTests clean install appassembler:assemble
+mvn install appassembler:assemble
 ```
 
 The main script to perform batch query processing is the [retrieve](./docs/retrieve.md) tool.
@@ -37,21 +37,6 @@ If you want to use all available processors on your machine to perform batch que
 
 Two other scripts are provided, to support advanced query processing strategies: the [ms-generate](./docs/ms-gen.md) and [bmw-generate](./docs/bmw-gen.md) tools.
 
-## Usage from within Terrier
-
-Following the previous two steps, you can also use terrier-micro from within the familiar `bin/terrier` commandline scripts.
-
-Firstly, ensure that terrier-ef and terrier-micro are installed on your machine. Then, configure Terrier's Maven resolver to import these by appending the following line to your terrier.properties file:
-
-    terrier.mvn.coords=it.cnr.isti.hpclab:terrier-micro:1.5.1
-    
-You can then use terrier-ef and terrier-micro tools, as folllows: 
-
-    bin/terrier ef-recompress $PWD/var/index ef
-    bin/terrier micro-ms-generator -I $PWD/var/index/ef.properties -w BM25
-    bin/terrier micro-bmw-generator -I $PWD/var/index/ef.properties -b 512
-
 ## Credits
 
 Developed by Nicola Tonellotto, ISTI-CNR. Contributions by Craig Macdonald, University of Glasgow, and Matteo Catena, ISTI-CNR.
-
