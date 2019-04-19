@@ -46,7 +46,7 @@
       <artifactId>guava</artifactId>
       <version>26.0-jre</version>
     </dependency>
- 
+
     <dependency>
       <groupId>it.cnr.isti.hpclab</groupId>
       <artifactId>terrier-eliasfano</artifactId>
@@ -207,6 +207,14 @@
               </program>
             </programs>
         </configuration>
+        <executions>
+            <execution>
+                <id>assemble</id>
+                <goals>
+                    <goal>assemble</goal>
+                </goals>
+            </execution>
+        </executions>
       </plugin>
 
     </plugins>
