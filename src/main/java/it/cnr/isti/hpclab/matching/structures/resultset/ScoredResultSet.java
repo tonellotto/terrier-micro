@@ -74,27 +74,14 @@ public class ScoredResultSet implements ResultSet
 	 * Constructs a result set using the docids and scores stored in the provided queue.<br>
 	 * The queue ordering in decreasing score in preserved.
 	 * 
-	 * @param queue the queue storing the results in decreasing order of scores (must be not null). 
-	 * The queue will be consumed and will be empty after the constructor returns.
+	 * @param queue the queue storing the results in decreasing order of scores (must be not null)
 	 */
 	public ScoredResultSet(final TopQueue queue)
 	{
-		this(queue, false);
-	}
-
-	/**
-	 * Constructs a result set using the docids and scores stored in the provided queue.<br>
-	 * The queue ordering in decreasing score in preserved.
-	 * 
-	 * @param queue the queue storing the results in decreasing order of scores (must be not null).
-	 * @param preserve if true, the queue will not be consumed during execution, but its copy will.
-	 */
-	public ScoredResultSet(final TopQueue queue, boolean preserve)
-	{
-		try {
+		//try {
 			checkNotNull(queue);
 		
-			PriorityQueue<Result> q = preserve ? queue.copy().top() : queue.top();
+			PriorityQueue<Result> q = queue.top();
 			int N = q.size();
 			this.mDocids = new int[N];
 			this.mScores = new float[N];
@@ -107,9 +94,9 @@ public class ScoredResultSet implements ResultSet
 				i++;
 			}
 
-		} catch (ClassNotFoundException | IOException e) {
-			e.printStackTrace();
-		}
+		//} catch (ClassNotFoundException | IOException e) {
+		//	e.printStackTrace();
+		//}
 	}
 
 	/** {@inheritDoc} */
