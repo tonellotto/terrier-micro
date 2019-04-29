@@ -88,7 +88,7 @@ public class Query
 		checkNotNull(queryText);
 		this.mOriginalQuery = queryText.trim();
 		
-		this.mTerms =  new Object2IntArrayMap<String>();
+		this.mTerms 	   = new Object2IntArrayMap<String>();
 		this.mMetadata     = new Object2ObjectArrayMap<>();
 		this.mMetadata_str = new Object2ObjectArrayMap<>();
 		
