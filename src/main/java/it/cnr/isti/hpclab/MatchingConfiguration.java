@@ -31,7 +31,6 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.SystemConfiguration;
 
 import org.apache.log4j.Logger;
-import org.terrier.utility.MavenResolver;
 
 import it.cnr.isti.hpclab.matching.structures.model.BM25;
 import it.cnr.isti.hpclab.matching.RankedOr;
