@@ -21,10 +21,12 @@
 package it.cnr.isti.hpclab;
 
 import java.io.File;
+import java.util.Map;
 
 import org.apache.commons.configuration.CompositeConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.MapConfiguration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.SystemConfiguration;
 
@@ -98,10 +100,17 @@ public class MatchingConfiguration
 
 	public static Configuration getConfiguration() 
 	{
-		if (config == null) { 	
+		if (config == null) {
+			boolean terrier = false;
 			config = new CompositeConfiguration();
 			config.setDelimiterParsingDisabled(true);
 			((CompositeConfiguration)config).addConfiguration(new SystemConfiguration());
+			if ("true".equals(System.getProperty("terrier.applicationsetup.loaded", null)))
+			{
+				LOGGER.info("Receiving configuration from Terrier's ApplicationSetup");
+				((CompositeConfiguration)config).addConfiguration(new TerrierConfiguration());
+				terrier = true;
+			}
 			try {
 				((CompositeConfiguration)config).addConfiguration(new PropertiesConfiguration(System.getProperty("user.dir") + File.separator + "micro.properties"));
 				// LOGGER.info("\"micro.properties\" file found in current directory " + Paths.get("").toAbsolutePath());
@@ -111,11 +120,22 @@ public class MatchingConfiguration
 					((CompositeConfiguration)config).addConfiguration(new PropertiesConfiguration(MatchingConfiguration.class.getResource("/micro.properties")));
 					LOGGER.info("\"micro.properties\" file found in classpath");
 				} catch (ConfigurationException e1) {
-					LOGGER.warn("\"micro.properties\" file not found, using system (e.g. -D...=...) properties and default values");
+					if (terrier)
+					LOGGER.info("\"micro.properties\" file not found, using \"terrier.properties\" only");
+					else
+						LOGGER.warn("\"micro.properties\" file not found, using system (e.g. -D...=...) properties and default values");
 				}
 			}
 		}
 		return config;
+	}
+
+	static class TerrierConfiguration extends MapConfiguration
+	{
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		TerrierConfiguration() {
+			super((Map<String, String>) (Map)org.terrier.utility.ApplicationSetup.getProperties());
+		}
 	}
 	
 	public static String get(Property p)
