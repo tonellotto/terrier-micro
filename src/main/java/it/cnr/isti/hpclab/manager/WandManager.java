@@ -90,6 +90,7 @@ public class WandManager extends Manager
         srq.getQuery().addMetadata(RuntimeProperty.PROCESSED_TERMS_MS, Arrays.toString(enums.stream().map(x -> x.maxscore).collect(Collectors.toList()).toArray()));
         srq.getQuery().addMetadata(RuntimeProperty.FINAL_THRESHOLD,    Float.toString(heap.threshold()));
         srq.getQuery().addMetadata(RuntimeProperty.INITIAL_THRESHOLD,  Float.toString(threshold));
+        srq.getQuery().addMetadata(RuntimeProperty.NUM_RESULTS, Integer.toString(heap.size()));
         
         srq.getQuery().addMetadata(RuntimeProperty.PARTIALLY_PROCESSED_DOCUMENTS, Long.toString(partiallyProcessedDocuments));
         srq.getQuery().addMetadata(RuntimeProperty.NUM_PIVOTS, Long.toString(numPivots));

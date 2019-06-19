@@ -49,6 +49,7 @@ public class Query
 		PROCESSED_TERMS 	("processed.terms"),
 		PROCESSED_TERMS_DF 	("processed.terms.df"),
 		PROCESSED_TERMS_MS 	("processed.terms.ms"),
+		NUM_RESULTS 		("num.results"),
 		
 		INITIAL_THRESHOLD 	("initial.threshold"),
 		FINAL_THRESHOLD 	("final.threshold"),

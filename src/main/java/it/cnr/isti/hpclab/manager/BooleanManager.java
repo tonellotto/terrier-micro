@@ -92,6 +92,11 @@ public class BooleanManager extends Manager
         srq.getQuery().addMetadata(RuntimeProperty.QUERY_LENGTH,    Integer.toString(enums.size()));
         srq.getQuery().addMetadata(RuntimeProperty.PROCESSED_POSTINGS, Long.toString(processedPostings));
         srq.getQuery().addMetadata(RuntimeProperty.PROCESSED_TERMS_DF, Arrays.toString(enums.stream().map(x -> x.entry.getDocumentFrequency()).collect(Collectors.toList()).toArray()));
+        
+        if (docids.size() > TOP_K())
+        	srq.getQuery().addMetadata(RuntimeProperty.NUM_RESULTS, Integer.toString(TOP_K()));
+        else 
+        	srq.getQuery().addMetadata(RuntimeProperty.NUM_RESULTS, Integer.toString(docids.size()));
 	}
 
 	public static class Tuple implements Comparable<Tuple>

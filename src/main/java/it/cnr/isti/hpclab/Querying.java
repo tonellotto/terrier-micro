@@ -154,8 +154,8 @@ public class Querying implements Closeable
 		mMatchingQueryCount++;
 		ResultSet rs = mManager.run(srq);
 		srq.setResultSet(rs); //TODO: shouldn't this be inside runMatching?
+		PrintStats(srq);
 		if (rs.size() != 0) {
-			PrintStats(srq);
 			mResultOutput.print(srq);
 		}
 	}
