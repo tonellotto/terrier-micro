@@ -54,7 +54,8 @@ public class MSGenerator {
 
 	private final int num_terms;
 
-	public static final class MSArgs {
+	public static final class MSArgs 
+	{
 		// required arguments
 
 		@Option(name = "-index", metaVar = "[String]", required = true, usage = "Input Index")

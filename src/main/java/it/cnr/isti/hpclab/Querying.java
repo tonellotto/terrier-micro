@@ -138,7 +138,7 @@ public class Querying implements Closeable
 						" seconds");
 	}
 
-	public void processQuery(final int queryId, final String query, final float threshold) throws IOException
+	public SearchRequest processQuery(final int queryId, final String query, final float threshold) throws IOException
 	{
 		checkNotNull(queryId);
 		checkNotNull(query);
@@ -155,9 +155,9 @@ public class Querying implements Closeable
 		ResultSet rs = mManager.run(srq);
 		srq.setResultSet(rs); //TODO: shouldn't this be inside runMatching?
 		PrintStats(srq);
-		if (rs.size() != 0) {
+		if (rs.size() != 0)
 			mResultOutput.print(srq);
-		}
+		return srq;
 	}
 
 	private static void PrintStats(SearchRequest srq) 

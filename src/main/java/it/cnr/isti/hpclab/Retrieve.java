@@ -27,11 +27,17 @@ import java.util.Scanner;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.log4j.Logger;
+import org.terrier.utility.ApplicationSetup;
 
-public class Retrieve {
-	
-	public static class Command extends org.terrier.applications.CLITool.CLIParsedCLITool {
+public class Retrieve 
+{
+	static 
+	{
+		ApplicationSetup.setProperty("terrier.index.retrievalLoadingProfile.default", "false");
+	}
 
+	public static class Command extends org.terrier.applications.CLITool.CLIParsedCLITool 
+	{
 		@Override
 		public int run(CommandLine line) throws Exception {
 			Retrieve.main(line.getArgs());
@@ -58,8 +64,8 @@ public class Retrieve {
 		
 		System.err.println(" -> logger level = " + Logger.getRootLogger().getLevel());
 	
-		org.terrier.utility.ApplicationSetup.TERRIER_INDEX_PATH = MatchingConfiguration.get(Property.INDEX_PATH);
-		org.terrier.utility.ApplicationSetup.TERRIER_INDEX_PREFIX = MatchingConfiguration.get(Property.INDEX_PREFIX);
+		ApplicationSetup.TERRIER_INDEX_PATH = MatchingConfiguration.get(Property.INDEX_PATH);
+		ApplicationSetup.TERRIER_INDEX_PREFIX = MatchingConfiguration.get(Property.INDEX_PREFIX);
 		
 		if (!(args.length == 1 && args[0].toLowerCase().equals("y"))) {
 			Scanner input = new Scanner( System.in );
@@ -75,7 +81,7 @@ public class Retrieve {
 			if (answer.matches("[N|n]"))
 				Runtime.getRuntime().exit(0);
 		}
-		org.terrier.utility.ApplicationSetup.setProperty("terrier.index.retrievalLoadingProfile.default", "false");
+				
 		Querying querying = new Querying();
 		querying.processQueries();
 		querying.close();		

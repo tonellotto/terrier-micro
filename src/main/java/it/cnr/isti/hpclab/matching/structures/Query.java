@@ -107,7 +107,7 @@ public class Query
 	 * 
 	 * @param t the string representing the term (must be not null)
 	 */
-	public void addTerm(final String t)
+	private void addTerm(final String t)
 	{
 		checkNotNull(t);
 		String tmp = t.trim();
