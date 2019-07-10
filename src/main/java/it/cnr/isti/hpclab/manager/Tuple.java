@@ -9,6 +9,9 @@ import it.cnr.isti.hpclab.maxscore.structures.BlockEnumerator;
 
 public class Tuple implements Comparable<Tuple>
 {
+	public static final Comparator<Tuple> SORT_BY_DOCID = (o1, o2) -> {return Integer.compare(o1.posting.getId(), o2.posting.getId()); };
+	public static final Comparator<Tuple> SORT_BY_SCORE = (o1, o2) -> {return Float.compare(o1.maxscore, o2.maxscore); };	
+
 	public final String term;
 	public 		 IterablePosting posting;
 	public final LexiconEntry entry;
@@ -50,8 +53,5 @@ public class Tuple implements Comparable<Tuple>
 	public int compareTo(Tuple that) 
 	{
 		return comp.compare(this, that);
-	}
-		
-	public static final Comparator<Tuple> SORT_BY_DOCID = (o1, o2) -> {return Integer.compare(o1.posting.getId(), o2.posting.getId()); };
-	public static final Comparator<Tuple> SORT_BY_SCORE = (o1, o2) -> {return Float.compare(o1.maxscore, o2.maxscore); };	
+	}		
 }

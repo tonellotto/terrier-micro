@@ -92,16 +92,16 @@ public class MSGenerator {
 		// check wm exists
 		try {
 			@SuppressWarnings("unused")
-			WeightingModel mModel = (WeightingModel) (Class.forName(wm_name).asSubclass(WeightingModel.class)
-					.getConstructor().newInstance());
+			WeightingModel mModel = (WeightingModel) (Class.forName(wm_name).asSubclass(WeightingModel.class).getConstructor().newInstance());
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Problem loading weighting model (" + wm_name + ")");
 		}
 	}
 
-	public static class Command extends org.terrier.applications.CLITool.CLIParsedCLITool {
-
-		protected Options getOptions() {
+	public static class Command extends org.terrier.applications.CLITool.CLIParsedCLITool 
+	{
+		protected Options getOptions() 
+		{
 			Options options = super.getOptions();
 			options.addOption(org.apache.commons.cli.Option.builder("w").argName("wmodel").hasArgs()
 					.desc("weighting model").required().build());
@@ -111,7 +111,8 @@ public class MSGenerator {
 		}
 
 		@Override
-		public int run(CommandLine line) throws Exception {
+		public int run(CommandLine line) throws Exception 
+		{
 			MSArgs args = new MSArgs();
 			if (line.hasOption("w"))
 				args.wm_name = line.getOptionValue("w");
@@ -123,15 +124,16 @@ public class MSGenerator {
 		}
 
 		@Override
-		public String commandname() {
+		public String commandname() 
+		{
 			return "micro-ms-generator";
 		}
 
 		@Override
-		public String helpsummary() {
+		public String helpsummary() 
+		{
 			return "generates a maxscore datastructure";
 		}
-
 	}
 
 	public static void main(String[] argv)
@@ -148,8 +150,8 @@ public class MSGenerator {
 		execute(args);
 	}
 	
-	public static void execute(MSArgs args) {
-
+	public static void execute(MSArgs args) 
+	{
 		IndexOnDisk.setIndexLoadingProfileAsRetrieval(false);
 		final String src_index_path = FilenameUtils.getFullPath(args.index);
 		final String src_index_prefix = FilenameUtils.getBaseName(args.index);
