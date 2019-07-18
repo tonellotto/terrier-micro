@@ -388,5 +388,4 @@ public abstract class MatchingSetupTest
 	    	return docid + " " + score;
 	    }
 	}
-	
 }
