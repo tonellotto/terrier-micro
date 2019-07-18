@@ -22,7 +22,7 @@ package it.cnr.isti.hpclab.matching;
 import it.cnr.isti.hpclab.annotations.Managed;
 import it.cnr.isti.hpclab.manager.BlockMaxWandManager;
 import it.cnr.isti.hpclab.manager.Manager;
-import it.cnr.isti.hpclab.manager.QueryEntries;
+import it.cnr.isti.hpclab.manager.MatchingEntry;
 import it.cnr.isti.hpclab.matching.structures.Result;
 import it.cnr.isti.hpclab.matching.structures.TopQueue;
 import it.cnr.isti.hpclab.matching.structures.WeightingModel;
@@ -48,12 +48,12 @@ public class BlockMaxWand implements MatchingAlgorithm
 	@Override
 	public long match(final int from, final int to) throws IOException 
 	{		
-		QueryEntries[] enums = manager.enums;
+		MatchingEntry[] enums = manager.local_enums;
 		final TopQueue heap = manager.heap;
 		final WeightingModel wm = manager.mWeightingModel;
 
 		manager.reset_to(from);
-		Arrays.sort(enums);
+		Arrays.sort(enums, MatchingEntry.SORT_BY_DOCID);
 		
 		long start_time = System.nanoTime();
 		while (true) {
@@ -117,7 +117,7 @@ public class BlockMaxWand implements MatchingAlgorithm
             		for (int i = 0; i <= pivot; ++i) 
             			enums[i].posting.next();
             		heap.insert(new Result(pivot_id, score));
-            		Arrays.sort(enums);
+            		Arrays.sort(enums, MatchingEntry.SORT_BY_DOCID);
             	} else {
                     // no match, move farthest list up to the pivot
                     int next_list = pivot;

@@ -22,30 +22,27 @@ package it.cnr.isti.hpclab.manager;
 
 import java.io.IOException;
 import java.util.Arrays;
-
 import java.util.stream.Collectors;
 
 import org.terrier.structures.Index;
 import org.terrier.structures.LexiconEntry;
 import org.terrier.structures.postings.IterablePosting;
 
+import it.cnr.isti.hpclab.annotations.Managing;
 import it.cnr.isti.hpclab.matching.structures.ResultSet;
 import it.cnr.isti.hpclab.matching.structures.SearchRequest;
 import it.cnr.isti.hpclab.matching.structures.TopQueue;
 import it.cnr.isti.hpclab.matching.structures.Query.RuntimeProperty;
 import it.cnr.isti.hpclab.matching.structures.resultset.EmptyResultSet;
 import it.cnr.isti.hpclab.matching.structures.resultset.ScoredResultSet;
+import it.cnr.isti.hpclab.maxscore.structures.BlockEnumerator;
 import it.cnr.isti.hpclab.maxscore.structures.BlockMaxScoreIndex;
 import it.cnr.isti.hpclab.maxscore.structures.MaxScoreIndex;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectList;
-
-public class BlockMaxWandManager extends Manager 
+@Managing(algorithms = "it.cnr.isti.hpclab.matching.And,it.cnr.isti.hpclab.matching.BlockMaxWand")
+public class BlockMaxWandManager extends WandManager 
 {
-	public QueryEntries[] enums;
-	public TopQueue heap;
-	public float threshold;
+	public MatchingEntry[] local_enums;
 	
 	public BlockMaxWandManager()
 	{
@@ -60,8 +57,9 @@ public class BlockMaxWandManager extends Manager
 	@Override
 	public ResultSet run(SearchRequest srq) throws IOException 
 	{
-		look(srq);
-		if (enums.length == 0)
+		open_enums(srq);
+		
+		if (local_enums.length == 0)
 			return new EmptyResultSet();
 		
 		processedPostings = 0l;
@@ -82,73 +80,46 @@ public class BlockMaxWandManager extends Manager
        	return new ScoredResultSet(heap);
 	}
 
+	@Override
 	protected void stats_enums(final SearchRequest srq)
 	{
-		srq.getQuery().addMetadata(RuntimeProperty.QUERY_TERMS, Arrays.toString(Arrays.stream(enums).map(x -> "\"" + x.term + "\"").collect(Collectors.toList()).toArray()));
+		super.stats_enums(srq);
 		
-        srq.getQuery().addMetadata(RuntimeProperty.PROCESSING_TIME, Double.toString(processingTime/1e6));
-        srq.getQuery().addMetadata(RuntimeProperty.QUERY_LENGTH,    Integer.toString(enums.length));
-        srq.getQuery().addMetadata(RuntimeProperty.PROCESSED_POSTINGS, Long.toString(processedPostings));
-        srq.getQuery().addMetadata(RuntimeProperty.PROCESSED_TERMS_DF, Arrays.toString(Arrays.stream(enums).map(x -> x.entry.getDocumentFrequency()).collect(Collectors.toList()).toArray()));
-        srq.getQuery().addMetadata(RuntimeProperty.PROCESSED_TERMS_MS, Arrays.toString(Arrays.stream(enums).map(x -> x.maxscore).collect(Collectors.toList()).toArray()));
-        srq.getQuery().addMetadata(RuntimeProperty.FINAL_THRESHOLD,    Float.toString(heap.threshold()));
-        srq.getQuery().addMetadata(RuntimeProperty.INITIAL_THRESHOLD,  Float.toString(threshold));
-        srq.getQuery().addMetadata(RuntimeProperty.NUM_RESULTS, Integer.toString(heap.size()));
+        srq.getQuery().addMetadata(RuntimeProperty.PROCESSED_TERMS_MS, Arrays.toString(Arrays.stream(local_enums).map(x -> x.maxscore).collect(Collectors.toList()).toArray()));
         
         srq.getQuery().addMetadata(RuntimeProperty.PARTIALLY_PROCESSED_DOCUMENTS, Long.toString(partiallyProcessedDocuments));
         srq.getQuery().addMetadata(RuntimeProperty.NUM_PIVOTS, Long.toString(numPivots));
 	}
 
-	public static float parseFloat(String s)
-	{
-		if (s == null)
-			return 0.0f;
-		return Float.parseFloat(s);
-	}
-
-	protected void close_enums() throws IOException
-	{
-		for (QueryEntries pair: enums)
-        	pair.posting.close();
-	}
-
-	protected void look(final SearchRequest searchRequest) throws IOException
+	@Override
+	protected MatchingEntry entryFrom(final String term, final IterablePosting posting, final LexiconEntry entry) throws IOException
 	{
 		MaxScoreIndex maxScoreIndex = (MaxScoreIndex) mIndex.getIndexStructure("maxscore");
+		float ms = maxScoreIndex.getMaxScore(entry.getTermId());
+		maxScoreIndex.close();
+		
 		BlockMaxScoreIndex blockMaxScoreIndex = (BlockMaxScoreIndex) mIndex.getIndexStructure("blockmaxscore");
-				
-		final int num_docs = mIndex.getCollectionStatistics().getNumberOfDocuments();
-		ObjectList<QueryEntries> enums_with_maxscore = new ObjectArrayList<QueryEntries>();
+		BlockEnumerator be = blockMaxScoreIndex.get(entry.getTermId());
+		return new MatchingEntry(term, posting, entry, ms, be);
+	}	
+
+	@Override
+	protected void open_enums(final SearchRequest searchRequest) throws IOException
+	{
+		super.open_enums(searchRequest);
 		
-		
-		// We look in the index and filter out common terms
-		for (String term: searchRequest.getQueryTerms()) {
-			LexiconEntry le = mIndex.getLexicon().getLexiconEntry(term);
-			if (le == null) {
-				LOGGER.warn("Term not found in index: " + term);
-			} else if (IGNORE_LOW_IDF_TERMS && le.getFrequency() > num_docs) {
-				LOGGER.warn("Term " + term + " has low idf - ignored from scoring.");
-			} else {
-				IterablePosting ip = mIndex.getInvertedIndex().getPostings(le);
-				ip.next();
-				enums_with_maxscore.add(new QueryEntries(term, ip, le, maxScoreIndex.getMaxScore(le.getTermId()), blockMaxScoreIndex.get(le.getTermId()), QueryEntries.SORT_BY_DOCID));
-			}
-		}
-		
-		maxScoreIndex.close();	
-		
-		enums = enums_with_maxscore.toArray(new QueryEntries[0]);
+		local_enums = enums.toArray(new MatchingEntry[0]);
 	}
-	
+
 	@Override
 	public void reset_to(final int to) throws IOException
 	{
-		for (QueryEntries t: enums) {
+		for (MatchingEntry t: local_enums) {
 			t.posting.close();
 			t.posting =  mIndex.getInvertedIndex().getPostings(t.entry);
 			t.posting.next();
 			t.posting.next(to);
-			
+
 			t.blockEnum.reset();
 			t.blockEnum.move(to);
 		}

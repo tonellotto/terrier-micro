@@ -23,15 +23,14 @@ package it.cnr.isti.hpclab.matching;
 import it.cnr.isti.hpclab.annotations.Managed;
 import it.cnr.isti.hpclab.manager.Manager;
 import it.cnr.isti.hpclab.manager.MaxScoreManager;
-import it.cnr.isti.hpclab.manager.QueryEntries;
+import it.cnr.isti.hpclab.manager.MatchingEntry;
 import it.cnr.isti.hpclab.matching.structures.Result;
 
 import it.cnr.isti.hpclab.matching.structures.TopQueue;
 import it.cnr.isti.hpclab.matching.structures.WeightingModel;
 
-import it.unimi.dsi.fastutil.objects.ObjectList;
-
 import java.io.IOException;
+import java.util.List;
 
 import org.terrier.structures.postings.IterablePosting;
 
@@ -49,7 +48,7 @@ public class MaxScore implements MatchingAlgorithm
 	@Override
 	public long match(final int from, final int to) throws IOException 
 	{
-		final ObjectList<QueryEntries> ordered_enums = manager.ordered_enums;
+		final List<MatchingEntry> ordered_enums = manager.enums;
 		final float upper_bounds[] = manager.upper_bounds;
 		final TopQueue heap = manager.heap;
 		final WeightingModel wm = manager.mWeightingModel;

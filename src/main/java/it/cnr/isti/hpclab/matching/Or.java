@@ -23,11 +23,11 @@ package it.cnr.isti.hpclab.matching;
 import it.cnr.isti.hpclab.annotations.Managed;
 import it.cnr.isti.hpclab.manager.BooleanManager;
 import it.cnr.isti.hpclab.manager.Manager;
-
+import it.cnr.isti.hpclab.manager.MatchingEntry;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.objects.ObjectList;
 
 import java.io.IOException;
+import java.util.List;
 
 @Managed(by = "it.cnr.isti.hpclab.manager.BooleanManager")
 public class Or implements MatchingAlgorithm
@@ -43,7 +43,7 @@ public class Or implements MatchingAlgorithm
 	@Override
 	public long match(int from, int to) throws IOException 
 	{
-		final ObjectList<BooleanManager.Tuple> enums = manager.enums;
+		final List<MatchingEntry> enums = manager.enums;
 		final IntList docids = manager.docids; // Can be safely removed if we do not need results to return
 		
 		manager.reset_to(from);

@@ -22,9 +22,14 @@ package it.cnr.isti.hpclab.manager;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.terrier.structures.Index;
+import org.terrier.structures.LexiconEntry;
+import org.terrier.structures.postings.IterablePosting;
 
 import it.cnr.isti.hpclab.MatchingConfiguration;
 import it.cnr.isti.hpclab.MatchingConfiguration.Property;
@@ -32,6 +37,9 @@ import it.cnr.isti.hpclab.matching.MatchingAlgorithm;
 import it.cnr.isti.hpclab.matching.structures.ResultSet;
 import it.cnr.isti.hpclab.matching.structures.SearchRequest;
 import it.cnr.isti.hpclab.matching.structures.WeightingModel;
+import it.cnr.isti.hpclab.matching.structures.Query.RuntimeProperty;
+
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -48,6 +56,8 @@ public abstract class Manager implements Closeable
 	protected Index mIndex = null;
 	public WeightingModel mWeightingModel = null;
 	protected MatchingAlgorithm mMatchingAlgorithm = null;
+	
+	public List<MatchingEntry> enums;
 
 	public long processingTime;
 	public long processedPostings;
@@ -100,7 +110,6 @@ public abstract class Manager implements Closeable
 			throw new IllegalArgumentException("Failed to load index: " + Index.getLastIndexLoadError());
 		}
 		mWeightingModel.setup(mIndex);
-		// mMatchingAlgorithm.setup(mIndex, mWeightingModel);
 		mMatchingAlgorithm.setup(this);
 	}
 
@@ -142,6 +151,62 @@ public abstract class Manager implements Closeable
 	{ 
 		return MatchingConfiguration.getInt(Property.TOP_K); 
 	}	
+
+	public void reset_to(final int to) throws IOException
+	{
+		for (MatchingEntry t: enums) {
+			t.posting.close();
+			t.posting =  mIndex.getInvertedIndex().getPostings(t.entry);
+			t.posting.next();
+			t.posting.next(to);
+		}
+	}
 	
-	abstract public void reset_to(final int to) throws IOException;
+	protected abstract MatchingEntry entryFrom(final String term, final IterablePosting posting, final LexiconEntry entry) throws IOException;
+	
+	protected void open_enums(final SearchRequest searchRequest) throws IOException
+	{	
+		enums = new ObjectArrayList<MatchingEntry>();
+		
+		final int num_docs = mIndex.getCollectionStatistics().getNumberOfDocuments();
+		
+		// We look in the index and filter out common terms
+		for (String term: searchRequest.getQueryTerms()) {
+			LexiconEntry le = mIndex.getLexicon().getLexiconEntry(term);
+			if (le == null) {
+				LOGGER.warn("Term not found in index: " + term);
+			} else if (IGNORE_LOW_IDF_TERMS && le.getFrequency() > num_docs) {
+				LOGGER.warn("Term " + term + " has low idf - ignored from scoring.");
+			} else {
+				IterablePosting ip = mIndex.getInvertedIndex().getPostings(le);
+				ip.next();
+				// enums.add(new MatchingEntry(term, ip, le));
+				enums.add(entryFrom(term, ip, le));
+			}
+		}		
+	}	
+
+	protected void close_enums() throws IOException
+	{
+		for (MatchingEntry pair: enums)
+        	pair.posting.close();
+	}
+	
+	public final int min_docid() 
+	{
+		int docid = Integer.MAX_VALUE;
+		for (int i = 0; i < enums.size(); i++)
+			if (enums.get(i).posting.getId() < docid)
+				docid = enums.get(i).posting.getId();
+		return docid;
+	}
+	
+	protected void stats_enums(final SearchRequest srq)
+	{
+		srq.getQuery().addMetadata(RuntimeProperty.QUERY_TERMS, Arrays.toString(enums.stream().map(x -> "\"" + x.term + "\"").collect(Collectors.toList()).toArray()));
+        srq.getQuery().addMetadata(RuntimeProperty.PROCESSING_TIME, Double.toString(processingTime/1e6));
+        srq.getQuery().addMetadata(RuntimeProperty.QUERY_LENGTH,    Integer.toString(enums.size()));
+        srq.getQuery().addMetadata(RuntimeProperty.PROCESSED_POSTINGS, Long.toString(processedPostings));
+        srq.getQuery().addMetadata(RuntimeProperty.PROCESSED_TERMS_DF, Arrays.toString(enums.stream().map(x -> x.entry.getDocumentFrequency()).collect(Collectors.toList()).toArray()));        
+	}
 }

@@ -20,46 +20,45 @@
 
 package it.cnr.isti.hpclab.manager;
 
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import org.terrier.structures.LexiconEntry;
 import org.terrier.structures.postings.IterablePosting;
 
 import it.cnr.isti.hpclab.maxscore.structures.BlockEnumerator;
 
-public class QueryEntries implements Comparable<QueryEntries>
+public class MatchingEntry
 {
-	public static final Comparator<QueryEntries> SORT_BY_DOCID = (o1, o2) -> {return Integer.compare(o1.posting.getId(), o2.posting.getId()); };
-	public static final Comparator<QueryEntries> SORT_BY_SCORE = (o1, o2) -> {return Float.compare(o1.maxscore, o2.maxscore); };	
+	public static final Comparator<MatchingEntry> SORT_BY_DOCID    = (o1, o2) -> {return Integer.compare(o1.posting.getId(), o2.posting.getId()); };
+	public static final Comparator<MatchingEntry> SORT_BY_MAXSCORE = (o1, o2) -> {return Float.compare(o1.maxscore, o2.maxscore); };	
 
+	// These members are public to avoid getter/setter boilerplate
 	public final String term;
-	public       IterablePosting posting;
 	public final LexiconEntry entry;
 	public final float maxscore;
 	public final BlockEnumerator blockEnum;
 	
-	public final Comparator<QueryEntries> comp;
-
-	public QueryEntries(final String term, final IterablePosting posting, final LexiconEntry entry, final float maxscore, final Comparator<QueryEntries> comp)
+	public IterablePosting posting;
+	
+	public MatchingEntry(final String term, final IterablePosting posting, final LexiconEntry entry)
 	{
-		this.term = term;
-		this.posting = posting;
-		this.entry = entry;
-		this.maxscore = maxscore;
-		this.blockEnum = null;
-		
-		this.comp = comp;
+		this(term, posting, entry, Float.MAX_VALUE, null);
 	}
 
-	public QueryEntries(final String term, final IterablePosting posting, final LexiconEntry entry, final float maxscore, final BlockEnumerator blockEnum, final Comparator<QueryEntries> comp)
+	public MatchingEntry(final String term, final IterablePosting posting, final LexiconEntry entry, final float maxscore)
+	{
+		this(term, posting, entry, maxscore, null);
+	}
+
+	public MatchingEntry(final String term, final IterablePosting posting, final LexiconEntry entry, final float maxscore, final BlockEnumerator blockEnum)
 	{
 		this.term = term;
 		this.posting = posting;
 		this.entry = entry;
 		this.maxscore = maxscore;
 		this.blockEnum = blockEnum;
-		
-		this.comp = comp;
 	}
 	
 	@Override
@@ -68,9 +67,13 @@ public class QueryEntries implements Comparable<QueryEntries>
 		return posting.toString() + ", [" + entry.getDocumentFrequency() + "," + entry.getFrequency() + "] <" + maxscore + ">"  + " {" + blockEnum + "}"; 
 	}
 
-	@Override
-	public int compareTo(QueryEntries that) 
+	public static void sortByCurrentDocid(List<MatchingEntry> list)
 	{
-		return comp.compare(this, that);
-	}		
+		Collections.sort(list, SORT_BY_DOCID);
+	}
+
+	public static void sortByMaxScore(List<MatchingEntry> list)
+	{
+		Collections.sort(list, SORT_BY_MAXSCORE);
+	}
 }

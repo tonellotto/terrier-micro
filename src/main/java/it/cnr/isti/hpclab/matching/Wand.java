@@ -22,15 +22,15 @@ package it.cnr.isti.hpclab.matching;
 
 import it.cnr.isti.hpclab.annotations.Managed;
 import it.cnr.isti.hpclab.manager.Manager;
-import it.cnr.isti.hpclab.manager.QueryEntries;
+import it.cnr.isti.hpclab.manager.MatchingEntry;
 import it.cnr.isti.hpclab.manager.WandManager;
 import it.cnr.isti.hpclab.matching.structures.Result;
 import it.cnr.isti.hpclab.matching.structures.TopQueue;
 import it.cnr.isti.hpclab.matching.structures.WeightingModel;
-import it.unimi.dsi.fastutil.objects.ObjectList;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
 import org.terrier.structures.postings.IterablePosting;
 
@@ -48,12 +48,12 @@ public class Wand implements MatchingAlgorithm
 	@Override
 	public long match(final int from, final int to) throws IOException 
 	{
-		final ObjectList<QueryEntries> enums = manager.enums;
+		final List<MatchingEntry> enums = manager.enums;
 		final TopQueue heap = manager.heap;
 		final WeightingModel wm = manager.mWeightingModel;
 
 		manager.reset_to(from);
-		Collections.sort(enums);
+		Collections.sort(enums, MatchingEntry.SORT_BY_DOCID);
 		
 		long start_time = System.nanoTime();
 		while (true) {
@@ -95,7 +95,7 @@ public class Wand implements MatchingAlgorithm
                 }
                 heap.insert(new Result(pivot_id, score));
                 // resort by docid
-                Collections.sort(enums);
+                Collections.sort(enums, MatchingEntry.SORT_BY_DOCID);
             } else {
                 // no match, move farthest list up to the pivot
                 int next_list = pivot;

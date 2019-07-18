@@ -22,13 +22,14 @@ package it.cnr.isti.hpclab.matching;
 
 import it.cnr.isti.hpclab.annotations.Managed;
 import it.cnr.isti.hpclab.manager.Manager;
+import it.cnr.isti.hpclab.manager.MatchingEntry;
 import it.cnr.isti.hpclab.manager.RankedManager;
 import it.cnr.isti.hpclab.matching.structures.Result;
 import it.cnr.isti.hpclab.matching.structures.TopQueue;
 import it.cnr.isti.hpclab.matching.structures.WeightingModel;
-import it.unimi.dsi.fastutil.objects.ObjectList;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.terrier.structures.postings.IterablePosting;
 
@@ -46,7 +47,7 @@ public class RankedOr implements MatchingAlgorithm
 	@Override
 	public long match(int from, int to) throws IOException 
 	{
-		final ObjectList<RankedManager.Tuple> enums = manager.enums;
+		final List<MatchingEntry> enums = manager.enums;
 		final TopQueue heap = manager.heap;
 		final WeightingModel wm = manager.mWeightingModel;
 
