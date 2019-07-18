@@ -43,7 +43,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 
 public class BlockMaxWandManager extends Manager 
 {
-	public Tuple[] enums;
+	public QueryEntries[] enums;
 	public TopQueue heap;
 	public float threshold;
 	
@@ -108,7 +108,7 @@ public class BlockMaxWandManager extends Manager
 
 	protected void close_enums() throws IOException
 	{
-		for (Tuple pair: enums)
+		for (QueryEntries pair: enums)
         	pair.posting.close();
 	}
 
@@ -118,7 +118,7 @@ public class BlockMaxWandManager extends Manager
 		BlockMaxScoreIndex blockMaxScoreIndex = (BlockMaxScoreIndex) mIndex.getIndexStructure("blockmaxscore");
 				
 		final int num_docs = mIndex.getCollectionStatistics().getNumberOfDocuments();
-		ObjectList<Tuple> enums_with_maxscore = new ObjectArrayList<Tuple>();
+		ObjectList<QueryEntries> enums_with_maxscore = new ObjectArrayList<QueryEntries>();
 		
 		
 		// We look in the index and filter out common terms
@@ -131,19 +131,19 @@ public class BlockMaxWandManager extends Manager
 			} else {
 				IterablePosting ip = mIndex.getInvertedIndex().getPostings(le);
 				ip.next();
-				enums_with_maxscore.add(new Tuple(term, ip, le, maxScoreIndex.getMaxScore(le.getTermId()), blockMaxScoreIndex.get(le.getTermId()), Tuple.SORT_BY_DOCID));
+				enums_with_maxscore.add(new QueryEntries(term, ip, le, maxScoreIndex.getMaxScore(le.getTermId()), blockMaxScoreIndex.get(le.getTermId()), QueryEntries.SORT_BY_DOCID));
 			}
 		}
 		
 		maxScoreIndex.close();	
 		
-		enums = enums_with_maxscore.toArray(new Tuple[0]);
+		enums = enums_with_maxscore.toArray(new QueryEntries[0]);
 	}
 	
 	@Override
 	public void reset_to(final int to) throws IOException
 	{
-		for (Tuple t: enums) {
+		for (QueryEntries t: enums) {
 			t.posting.close();
 			t.posting =  mIndex.getInvertedIndex().getPostings(t.entry);
 			t.posting.next();

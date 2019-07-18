@@ -42,7 +42,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 
 public class MaxScoreManager extends Manager
 {
-	public ObjectList<Tuple> ordered_enums;
+	public ObjectList<QueryEntries> ordered_enums;
 	public float upper_bounds[];
 	public TopQueue heap;
 	public float threshold;
@@ -115,7 +115,7 @@ public class MaxScoreManager extends Manager
 
 	protected void close_enums() throws IOException
 	{
-		for (Tuple pair: ordered_enums)
+		for (QueryEntries pair: ordered_enums)
         	pair.posting.close();
 	}
 	
@@ -133,7 +133,7 @@ public class MaxScoreManager extends Manager
 		MaxScoreIndex maxScoreIndex = (MaxScoreIndex) mIndex.getIndexStructure("maxscore");
 				
 		final int num_docs = mIndex.getCollectionStatistics().getNumberOfDocuments();
-		ordered_enums = new ObjectArrayList<Tuple>();
+		ordered_enums = new ObjectArrayList<QueryEntries>();
 		
 		// We look in the index and filter out common terms
 		for (String term: searchRequest.getQueryTerms()) {
@@ -145,7 +145,7 @@ public class MaxScoreManager extends Manager
 			} else {
 				IterablePosting ip = mIndex.getInvertedIndex().getPostings(le);
 				ip.next();
-				ordered_enums.add(new Tuple(term, ip, le, maxScoreIndex.getMaxScore(le.getTermId()), Tuple.SORT_BY_SCORE));
+				ordered_enums.add(new QueryEntries(term, ip, le, maxScoreIndex.getMaxScore(le.getTermId()), QueryEntries.SORT_BY_SCORE));
 			}
 		}
 		
@@ -155,7 +155,7 @@ public class MaxScoreManager extends Manager
 	@Override
 	public void reset_to(final int to) throws IOException
 	{
-		for (Tuple t: ordered_enums) {
+		for (QueryEntries t: ordered_enums) {
 			t.posting.close();
 			t.posting =  mIndex.getInvertedIndex().getPostings(t.entry);
 			t.posting.next();

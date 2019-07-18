@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 
 public class WandManager extends Manager
 {
-	public ObjectList<Tuple> enums;
+	public ObjectList<QueryEntries> enums;
 	public TopQueue heap;
 	public float threshold;
 
@@ -105,7 +105,7 @@ public class WandManager extends Manager
 
 	protected void close_enums() throws IOException
 	{
-		for (Tuple pair: enums)
+		for (QueryEntries pair: enums)
         	pair.posting.close();
 	}
 	
@@ -114,7 +114,7 @@ public class WandManager extends Manager
 		MaxScoreIndex maxScoreIndex = (MaxScoreIndex) mIndex.getIndexStructure("maxscore");
 				
 		final int num_docs = mIndex.getCollectionStatistics().getNumberOfDocuments();
-		enums = new ObjectArrayList<Tuple>();
+		enums = new ObjectArrayList<QueryEntries>();
 		
 		// We look in the index and filter out common terms
 		for (String term: searchRequest.getQueryTerms()) {
@@ -126,7 +126,7 @@ public class WandManager extends Manager
 			} else {
 				IterablePosting ip = mIndex.getInvertedIndex().getPostings(le);
 				ip.next();
-				enums.add(new Tuple(term, ip, le, maxScoreIndex.getMaxScore(le.getTermId()), Tuple.SORT_BY_DOCID));
+				enums.add(new QueryEntries(term, ip, le, maxScoreIndex.getMaxScore(le.getTermId()), QueryEntries.SORT_BY_DOCID));
 			}
 		}
 		
@@ -136,7 +136,7 @@ public class WandManager extends Manager
 	@Override
 	public void reset_to(final int to) throws IOException
 	{
-		for (Tuple t: enums) {
+		for (QueryEntries t: enums) {
 			t.posting.close();
 			t.posting =  mIndex.getInvertedIndex().getPostings(t.entry);
 			t.posting.next();
