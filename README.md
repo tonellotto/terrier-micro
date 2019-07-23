@@ -1,5 +1,6 @@
 # Terrier Micro
 
+[![Build Status](https://travis-ci.org/tonellotto/terrier-micro.svg?branch=1.5.1)](https://travis-ci.org/tonellotto/terrier-micro)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/be331c1b98ca42b588db6115c548df07)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tonellotto/terrier-micro&amp;utm_campaign=Badge_Grade)
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
 
