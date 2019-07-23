@@ -53,12 +53,18 @@
       <artifactId>guava</artifactId>
       <version>26.0-jre</version>
     </dependency>
-
+<!--
     <dependency>
       <groupId>it.cnr.isti.hpclab</groupId>
       <artifactId>terrier-eliasfano</artifactId>
       <version>1.5.1</version>
       <optional>true</optional>
+    </dependency>
+-->
+    <dependency>
+      <groupId>com.github.tonellotto</groupId>
+      <artifactId>terrier-ef</artifactId>
+      <version>v1.5.1</version>
     </dependency>
 
     <dependency>
