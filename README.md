@@ -6,6 +6,21 @@
 
 This project provides a lightweight implementation of some query processing strategies built on top of Terrier 5. It re-implements the query processing pipeline of the Terrier search engine, removing all unnecessary features such as document score modifiers, multiple weighting models, etc.
 
+If you use this package to conduct search or experimentation, whether be it a research paper, dissertation, article, poster, presentation, or documentation, please cite the following paper:
+
+    @article{fnt,
+        author = {Tonellotto, Nicola and Macdonald, Craig and Ounis, Iadh},
+        issn = {1554-0669},
+        journal = {Foundations and Trends in Information Retrieval},
+        number = {4--5},
+        pages = {319--492},
+        title = {Efficient Query Processing for Scalable Web Search},
+        volume = {12},
+    year = {2018}
+    }
+
+This package is [free software](http://www.gnu.org/philosophy/free-sw.html) distributed under the [GNU Lesser General Public License](http://www.gnu.org/copyleft/lesser.html).
+
 This package is [free software](http://www.gnu.org/philosophy/free-sw.html) distributed under the [GNU Lesser General Public License](http://www.gnu.org/copyleft/lesser.html).
 
 ## Pre-requisites
