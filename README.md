@@ -16,7 +16,7 @@ If you use this package to conduct search or experimentation, whether be it a re
         pages = {319--492},
         title = {Efficient Query Processing for Scalable Web Search},
         volume = {12},
-    year = {2018}
+        year = {2018}
     }
 
 This package is [free software](http://www.gnu.org/philosophy/free-sw.html) distributed under the [GNU Lesser General Public License](http://www.gnu.org/copyleft/lesser.html).
