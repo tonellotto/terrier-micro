@@ -21,8 +21,6 @@ If you use this package to conduct search or experimentation, whether be it a re
 
 This package is [free software](http://www.gnu.org/philosophy/free-sw.html) distributed under the [GNU Lesser General Public License](http://www.gnu.org/copyleft/lesser.html).
 
-This package is [free software](http://www.gnu.org/philosophy/free-sw.html) distributed under the [GNU Lesser General Public License](http://www.gnu.org/copyleft/lesser.html).
-
 ## Pre-requisites
 
 [Elias-Fano compression for Terrier](https://github.com/tonellotto/terrier-ef) is required for testing purposes or if you plan to use it in your experiments, but it is not explicitly required for using the Terrier Micro package.
