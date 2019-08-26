@@ -44,8 +44,8 @@ import java.util.Random;
 
 public class BM25 implements WeightingModel
 {
-	@Getter @Setter private static double b = 0.75d;
-	@Getter @Setter private static double k1 = 1.2d;
+	@Getter @Setter private static double b = Double.parseDouble(System.getProperty("bm25.b", "0.75"));
+	@Getter @Setter private static double k1 = Double.parseDouble(System.getProperty("bm25.k1", "1.2"));
 	
 	private double avg_doc_len;
 	private int num_docs;
