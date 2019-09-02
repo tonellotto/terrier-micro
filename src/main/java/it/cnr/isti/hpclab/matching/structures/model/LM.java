@@ -58,11 +58,12 @@ public class LM implements WeightingModel
 	
 	/** {@inheritDoc} */
 	@Override
-	public final float score(int __, int x, int y, int ___, int F_t)
+	public final float score(int term_freq_in_query, int x, int y, int doc_freq_in_coll, int F_t)
 	{
 		double d_x = (double)x;
 		double d_y = (double)y;
 		double d_F_t = (double)F_t;
-		return (float) Math.max(EPSILON_SCORE, (Math.log(1 + (d_x/(mu * (d_F_t/num_tokens_in_coll)))) + Math.log(mu/(mu+d_y))));
+		// return (float) Math.max(EPSILON_SCORE, term_freq_in_query * (Math.log(1 + (d_x/(mu * (d_F_t/num_tokens_in_coll)))) + Math.log(mu/(mu+d_y))));
+		return (float) Math.max(EPSILON_SCORE, term_freq_in_query * Math.log( (d_x + mu * d_F_t / num_tokens_in_coll)) / (d_y + mu));
 	}
 }
