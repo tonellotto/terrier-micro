@@ -1,0 +1,136 @@
+options {
+	STATIC = false;
+	LOOKAHEAD = 1;
+	FORCE_LA_CHECK = true;
+	DEBUG_PARSER = false;
+}
+
+PARSER_BEGIN(SimpleQueryParser)
+
+package it.cnr.isti.hpclab.matching.structures.query;
+
+import java.util.List;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+public class SimpleQueryParser
+{
+    public SimpleQueryParser()
+    {
+        this( new java.io.StringReader( "" ) ); // Just for initialization purposes...
+    }
+
+    public List<QueryTerm> parse( final String text ) throws QueryParserException
+    {
+        ReInit( new java.io.StringReader( text ) );
+
+        try {
+          final List<QueryTerm> list = query();
+          return list;
+        } catch( ParseException e ) {
+          throw new QueryParserException( e );
+        }
+    }
+
+    public static void main(String args[])
+    {
+        SimpleQueryParser parser = new SimpleQueryParser();
+        try {
+            if (args.length == 1 && args[0].equals("-")) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+                String line = null;
+                while ((line = br.readLine())!= null)
+                   System.out.println(parser.parse(line.trim()));
+            } else if (args.length == 1) {
+                String query = args[0];
+                System.out.println(parser.parse(query));
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+PARSER_END(SimpleQueryParser)
+
+/** Skip these characters, they are considered "white space" **/
+SKIP : { " " | "\t" | "\r" | "\f" | "\n" }
+
+/** Reserved tokens for simple query language */
+TOKEN : { <WORD : (["A"-"Z","a"-"z","0"-"9"])+ > | <PLUS: "+"> | <HAT: "^"> : Number }
+
+<Number> TOKEN : {
+	    < NUMBER: (<DIGIT>)+ ( "." (<DIGIT>)+ )? > : DEFAULT
+	|   < DIGIT: ["0"-"9"] > : DEFAULT
+}
+
+/** Top level */
+List<QueryTerm> query() :
+{
+    List<QueryTerm> qtl = new ObjectArrayList<QueryTerm>();
+}
+{
+    ( getQueryTerm(qtl) )+
+    { return qtl; }
+}
+
+void getQueryTerm(List<QueryTerm> qtl):
+{
+    QueryTerm rtr = null;
+    Token req = null;
+    Float fWeight = null;
+}
+{
+    (
+        (req = <PLUS>)?
+        (rtr = word())
+        (<HAT> fWeight = getWeight())?
+    )
+    {
+        if (req != null && req.image.equals("+"))
+            rtr.setRequired(true);
+        else
+            rtr.setRequired(false);
+
+        if (fWeight != null)
+            rtr.setWeight(fWeight.floatValue());
+        else
+            rtr.setWeight(1.0f);
+
+        qtl.add(rtr);
+    }
+}
+
+QueryTerm parse() :
+{
+    QueryTerm rtr = null;
+}
+{
+    ( rtr = word() )
+    {
+        return rtr;
+    }
+}
+
+float getWeight():
+{
+    Token t;
+}
+{
+    t = <NUMBER>
+    {
+        return Float.parseFloat(t.toString());
+    }
+}
+
+QueryTerm word() :
+{
+    Token word;
+}
+{
+    word = <WORD>
+    {
+      return new QueryTerm(word.image);
+    }
+}

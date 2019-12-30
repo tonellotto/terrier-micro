@@ -66,7 +66,7 @@ public class BlockMaxWand implements MatchingAlgorithm
                     break;
                 }
 
-                upper_bound += enums[pivot].maxscore;
+                upper_bound += enums[pivot].qtf * enums[pivot].maxscore;
                 if (heap.wouldEnter(upper_bound)) {
                     found_pivot = true;
                     break;
@@ -92,7 +92,7 @@ public class BlockMaxWand implements MatchingAlgorithm
             for (int i = 0; i <= pivot; ++i) {
             	BlockEnumerator b = enums[i].blockEnum;
             	b.move(pivot_id);
-            	blockMaxScore += b.score();
+            	blockMaxScore += enums[i].qtf * b.score();
             	// We do not compute next_b here since it's faster to do it later on... (check comments)
             	//
             	// if (b.last() < next_b)
@@ -106,17 +106,22 @@ public class BlockMaxWand implements MatchingAlgorithm
             		manager.partiallyProcessedDocuments++;
             		float score = 0.0f;
             		float p_score = 0.0f;
+            		int numRequired = 0;
             		for (int i = 0; i <= pivot; ++i) {
-            			score += (p_score = wm.score(1, enums[i].posting, enums[i].entry));
+            			score += (p_score = wm.score(enums[i].qtf, enums[i].posting, enums[i].entry) * enums[i].weight);
             			manager.processedPostings++;
+            			if (enums[i].term.isRequired())
+            				numRequired++;
+
             			// Early termination
-            			blockMaxScore -= (enums[i].blockEnum.score() - p_score);
+            			blockMaxScore -= (enums[i].qtf * enums[i].blockEnum.score() - p_score);
             			if (!heap.wouldEnter(blockMaxScore))
             				break;
             		}
             		for (int i = 0; i <= pivot; ++i) 
             			enums[i].posting.next();
-            		heap.insert(new Result(pivot_id, score));
+            		if (numRequired == manager.numRequired) 
+            			heap.insert(new Result(pivot_id, score));
             		Arrays.sort(enums, MatchingEntry.SORT_BY_DOCID);
             	} else {
                     // no match, move farthest list up to the pivot

@@ -30,6 +30,7 @@ import it.cnr.isti.hpclab.manager.Manager;
 import it.cnr.isti.hpclab.matching.MatchingSetupTest;
 import it.cnr.isti.hpclab.matching.structures.ResultSet;
 import it.cnr.isti.hpclab.matching.structures.SearchRequest;
+import it.cnr.isti.hpclab.matching.structures.query.QueryParserException;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -137,7 +138,7 @@ public class OrTest extends MatchingSetupTest
 		System.err.println("Union of terms \"" + query + "\" contains " + docids.size() + " documents");
 	}
 		
-	@Test public void originalOr() throws IOException
+	@Test public void originalOr() throws IOException, QueryParserException
 	{
 		MatchingConfiguration.set(Property.TOP_K, "100000000");
 		getOrCorrectResults();
@@ -159,7 +160,7 @@ public class OrTest extends MatchingSetupTest
 			assertEquals(andDocids[i], docids.getInt(i));
 	}
 	
-	@Test public void eliasFanoOr() throws IOException
+	@Test public void eliasFanoOr() throws IOException, QueryParserException
 	{
 		MatchingConfiguration.set(Property.TOP_K, "100000000");
 		getOrCorrectResults();

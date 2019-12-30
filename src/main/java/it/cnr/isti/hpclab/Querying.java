@@ -22,8 +22,9 @@ package it.cnr.isti.hpclab;
 
 import it.cnr.isti.hpclab.MatchingConfiguration.Property;
 import it.cnr.isti.hpclab.matching.MatchingAlgorithm;
-import it.cnr.isti.hpclab.matching.structures.Query.RuntimeProperty;
+import it.cnr.isti.hpclab.matching.structures.QueryProperties.RuntimeProperty;
 import it.cnr.isti.hpclab.matching.structures.output.ResultOutput;
+import it.cnr.isti.hpclab.matching.structures.query.QueryParserException;
 import it.cnr.isti.hpclab.matching.structures.query.QuerySource;
 import it.cnr.isti.hpclab.matching.structures.query.ThresholdQuerySource;
 import it.cnr.isti.hpclab.matching.structures.ResultSet;
@@ -106,7 +107,7 @@ public class Querying implements Closeable
 		mResultOutput.close();
 	}
 
-	public void processQueries() throws IOException 
+	public void processQueries() throws IOException, QueryParserException 
 	{
 		mMatchingQueryCount = 0;
 		mQuerySource.reset();
@@ -138,7 +139,7 @@ public class Querying implements Closeable
 						" seconds");
 	}
 
-	public SearchRequest processQuery(final int queryId, final String query, final float threshold) throws IOException
+	public SearchRequest processQuery(final int queryId, final String query, final float threshold) throws IOException, QueryParserException
 	{
 		checkNotNull(queryId);
 		checkNotNull(query);

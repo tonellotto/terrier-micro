@@ -30,7 +30,8 @@ import it.cnr.isti.hpclab.annotations.Managing;
 import it.cnr.isti.hpclab.matching.structures.ResultSet;
 import it.cnr.isti.hpclab.matching.structures.SearchRequest;
 import it.cnr.isti.hpclab.matching.structures.TopQueue;
-import it.cnr.isti.hpclab.matching.structures.Query.RuntimeProperty;
+import it.cnr.isti.hpclab.matching.structures.query.QueryTerm;
+import it.cnr.isti.hpclab.matching.structures.QueryProperties.RuntimeProperty;
 import it.cnr.isti.hpclab.matching.structures.resultset.EmptyResultSet;
 import it.cnr.isti.hpclab.matching.structures.resultset.ScoredResultSet;
 import it.cnr.isti.hpclab.maxscore.structures.MaxScoreIndex;
@@ -84,13 +85,13 @@ public class WandManager extends RankedManager
 	}
 
 	@Override
-	protected MatchingEntry entryFrom(final String term, final IterablePosting posting, final LexiconEntry entry) throws IOException
+	protected MatchingEntry entryFrom(final int qtf, final QueryTerm term, final IterablePosting posting, final LexiconEntry entry) throws IOException
 	{
 		MaxScoreIndex maxScoreIndex = (MaxScoreIndex) mIndex.getIndexStructure("maxscore");
 		float ms = maxScoreIndex.getMaxScore(entry.getTermId());
 		maxScoreIndex.close();
 		
-		return new MatchingEntry(term, posting, entry, ms);
+		return new MatchingEntry(qtf, term, posting, entry, ms);
 	}	
 	
 	@Override

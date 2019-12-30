@@ -27,6 +27,7 @@ import java.util.List;
 import org.terrier.structures.LexiconEntry;
 import org.terrier.structures.postings.IterablePosting;
 
+import it.cnr.isti.hpclab.matching.structures.query.QueryTerm;
 import it.cnr.isti.hpclab.maxscore.structures.BlockEnumerator;
 
 public class MatchingEntry
@@ -35,36 +36,40 @@ public class MatchingEntry
 	public static final Comparator<MatchingEntry> SORT_BY_MAXSCORE = (o1, o2) -> {return Float.compare(o1.maxscore, o2.maxscore); };	
 
 	// These members are public to avoid getter/setter boilerplate
-	public final String term;
+	public final int qtf;
+	public final QueryTerm term;
 	public final LexiconEntry entry;
 	public final float maxscore;
 	public final BlockEnumerator blockEnum;
+	public final float weight;
 	
 	public IterablePosting posting;
 	
-	public MatchingEntry(final String term, final IterablePosting posting, final LexiconEntry entry)
+	public MatchingEntry(final int qtf, final QueryTerm term, final IterablePosting posting, final LexiconEntry entry)
 	{
-		this(term, posting, entry, Float.MAX_VALUE, null);
+		this(qtf, term, posting, entry, Float.MAX_VALUE, null);
 	}
 
-	public MatchingEntry(final String term, final IterablePosting posting, final LexiconEntry entry, final float maxscore)
+	public MatchingEntry(final int qtf, final QueryTerm term, final IterablePosting posting, final LexiconEntry entry, final float maxscore)
 	{
-		this(term, posting, entry, maxscore, null);
+		this(qtf, term, posting, entry, maxscore, null);
 	}
 
-	public MatchingEntry(final String term, final IterablePosting posting, final LexiconEntry entry, final float maxscore, final BlockEnumerator blockEnum)
+	public MatchingEntry(final int qtf, final QueryTerm term, final IterablePosting posting, final LexiconEntry entry, final float maxscore, final BlockEnumerator blockEnum)
 	{
+		this.qtf = qtf;
 		this.term = term;
 		this.posting = posting;
 		this.entry = entry;
-		this.maxscore = maxscore;
+		this.maxscore = maxscore * term.getWeight();
 		this.blockEnum = blockEnum;
+		this.weight = term.getWeight();	
 	}
-	
+		
 	@Override
 	public String toString()
 	{
-		return posting.toString() + ", [" + entry.getDocumentFrequency() + "," + entry.getFrequency() + "] <" + maxscore + ">"  + " {" + blockEnum + "}"; 
+		return posting.toString() + ", [" + entry.getDocumentFrequency() + "," + entry.getFrequency() + "] <" + maxscore + ">"  + " {" + blockEnum + "} (^" + term.getWeight() + ")"; 
 	}
 
 	public static void sortByCurrentDocid(List<MatchingEntry> list)

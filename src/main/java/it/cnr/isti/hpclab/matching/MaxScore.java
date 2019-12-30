@@ -71,11 +71,14 @@ public class MaxScore implements MatchingAlgorithm
         	Result result = new Result(currentDocid);
         	nextDocid = Integer.MAX_VALUE;
 
+        	int numRequired = 0;
         	// We compute the score of the essential lists
         	for (int i = non_essential_lists; i < ordered_enums.size(); ++i) {
         		p = ordered_enums.get(i).posting;
         		if (p.getId() == currentDocid) {
-        			result.updateScore(wm.score(1, p, ordered_enums.get(i).entry));
+        			result.updateScore(wm.score(ordered_enums.get(i).qtf, p, ordered_enums.get(i).entry) * ordered_enums.get(i).weight);
+        			if (ordered_enums.get(i).term.isRequired())
+        				numRequired++;
         			manager.processedPostings += 1;
         			p.next();
         		}
@@ -96,19 +99,23 @@ public class MaxScore implements MatchingAlgorithm
         		p.next(currentDocid);
 
         		if (p.getId() == currentDocid) {
-        			result.updateScore(wm.score(1, p, ordered_enums.get(i).entry));
+        			result.updateScore(wm.score(ordered_enums.get(i).qtf, p, ordered_enums.get(i).entry) * ordered_enums.get(i).weight);
+        			if (ordered_enums.get(i).term.isRequired())
+        				numRequired++;
         			manager.processedPostings += 1;
         		}
         	}
        	
-        	if (heap.insert(result)) {
-        		int old = non_essential_lists;
-        		// update non-essential lists
-        		while (non_essential_lists < ordered_enums.size() && !heap.wouldEnter(upper_bounds[non_essential_lists])) {
-        			non_essential_lists += 1;
+        	if (numRequired == manager.numRequired) {
+        		if (heap.insert(result)) {
+        			int old = non_essential_lists;
+        			// update non-essential lists
+        			while (non_essential_lists < ordered_enums.size() && !heap.wouldEnter(upper_bounds[non_essential_lists])) {
+        				non_essential_lists += 1;
+        			}
+        			if (old != non_essential_lists)
+        				manager.numPivots++;
         		}
-        		if (old != non_essential_lists)
-        			manager.numPivots++;
         	}
         	currentDocid = nextDocid;
         }

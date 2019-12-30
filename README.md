@@ -51,6 +51,12 @@ If you want to use all available processors on your machine to perform batch que
 
 Two other scripts are provided, to support advanced query processing strategies: the [ms-generate](./docs/ms-gen.md) and [bmw-generate](./docs/bmw-gen.md) tools.
 
+## Python
+
+The [python](./python) folder repo holds static copies of notebooks for learning to use Terrier Micro (Java). The notebooks in this repo are sync'ed (by hand) with notebooks in Colab. For convenience, there is a small pre-built  index, available to download [here](https://drive.google.com/open?id=1si4B1McN4u7a_kF8fTexsnStc7qWrlBb).
+
+* _Terrier Micro demo on Robust 2004_: [local](./python/terrier_robust04_demo.ipynb) and [colab](https://colab.research.google.com/drive/1M2UkPA2dWrpFx4zZO7beNl5bG6BA9-mR) notebooks.
+
 ## Credits
 
 Developed by Nicola Tonellotto, ISTI-CNR. Contributions by Craig Macdonald, University of Glasgow, and Matteo Catena, ISTI-CNR.

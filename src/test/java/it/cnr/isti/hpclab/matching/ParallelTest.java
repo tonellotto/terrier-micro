@@ -43,7 +43,7 @@ import it.cnr.isti.hpclab.MatchingConfiguration;
 import it.cnr.isti.hpclab.MatchingConfiguration.Property;
 import it.cnr.isti.hpclab.ef.EliasFano;
 import it.cnr.isti.hpclab.ef.Generator;
-
+import it.cnr.isti.hpclab.matching.structures.query.QueryParserException;
 import it.cnr.isti.hpclab.Retrieve;
 import it.cnr.isti.hpclab.parallel.ParallelRetrieve;
 
@@ -114,7 +114,7 @@ public class ParallelTest extends MatchingSetupTest
 		Generator.main(args);
 	}
 
-	private List<Pair> original_results() throws IOException
+	private List<Pair> original_results() throws IOException, QueryParserException
 	{
 		Files.write(Paths.get(terrierEtc + File.separator + "./query.txt"), query.getBytes());
 		
@@ -138,7 +138,7 @@ public class ParallelTest extends MatchingSetupTest
 		}
 	}
 	
-	private List<Pair> parallel_results() throws IOException
+	private List<Pair> parallel_results() throws IOException, QueryParserException
 	{
 		Files.write(Paths.get(terrierEtc + File.separator + "./query.txt"), query.getBytes());
 		
@@ -163,7 +163,7 @@ public class ParallelTest extends MatchingSetupTest
 	}
 
 	@Test
-	public void test() throws IOException
+	public void test() throws IOException, QueryParserException
 	{
 		List<Pair> original = original_results();
 		List<Pair> parallel = parallel_results();

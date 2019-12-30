@@ -31,7 +31,8 @@ import org.terrier.structures.postings.IterablePosting;
 import it.cnr.isti.hpclab.annotations.Managing;
 import it.cnr.isti.hpclab.matching.structures.ResultSet;
 import it.cnr.isti.hpclab.matching.structures.SearchRequest;
-import it.cnr.isti.hpclab.matching.structures.Query.RuntimeProperty;
+import it.cnr.isti.hpclab.matching.structures.query.QueryTerm;
+import it.cnr.isti.hpclab.matching.structures.QueryProperties.RuntimeProperty;
 import it.cnr.isti.hpclab.matching.structures.resultset.DocidResultSet;
 import it.cnr.isti.hpclab.matching.structures.resultset.EmptyResultSet;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -91,8 +92,8 @@ public class BooleanManager extends Manager
 	}
 	
 	@Override
-	protected MatchingEntry entryFrom(final String term, final IterablePosting posting, final LexiconEntry entry) throws IOException
+	protected MatchingEntry entryFrom(final int qtf, final QueryTerm term, final IterablePosting posting, final LexiconEntry entry) throws IOException
 	{
-		return new MatchingEntry(term, posting, entry);
+		return new MatchingEntry(qtf, term, posting, entry);
 	}	
 }

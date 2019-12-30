@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 import it.cnr.isti.hpclab.MatchingConfiguration;
 import it.cnr.isti.hpclab.MatchingConfiguration.Property;
 import it.cnr.isti.hpclab.matching.structures.SearchRequest;
-import it.cnr.isti.hpclab.matching.structures.Query.RuntimeProperty;
+import it.cnr.isti.hpclab.matching.structures.QueryProperties.RuntimeProperty;
 import it.cnr.isti.hpclab.matching.structures.output.ResultOutput;
 import it.cnr.isti.hpclab.util.StatsLine;
 

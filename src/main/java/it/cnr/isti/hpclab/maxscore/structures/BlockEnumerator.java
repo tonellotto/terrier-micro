@@ -27,15 +27,17 @@ public class BlockEnumerator
 {	
 	private final int[] mDocids;
 	private final float[] mScores;
+	private final float weight;
 	
 	private final int mBegin;
 	private int mPos;
 	private final int mNumBlocks;
 		
-	public BlockEnumerator(long offset, int numBlocks, final int[] docids, final float[] scores) throws IOException
+	public BlockEnumerator(long offset, int numBlocks, final int[] docids, final float[] scores, final float weight) throws IOException
 	{
 		this.mDocids = docids;
 		this.mScores = scores;
+		this.weight  = weight;
 		
 		this.mBegin = (int) offset;
 		// this.mPos = 0;
@@ -79,7 +81,7 @@ public class BlockEnumerator
     public float score()
     {
     	if (mPos < mNumBlocks)
-    		return mScores[mBegin + mPos];
+    		return weight * mScores[mBegin + mPos];
     	return 0.0f;
     	// throw new NoSuchElementException("Can't get score when END_OF_BLOCK has been reached");
     }
@@ -100,7 +102,7 @@ public class BlockEnumerator
 	{
 		if (this.mNumBlocks == 0)
 			return "[]";
-		return "[" + mDocids[mBegin + mPos] + "," + mScores[mBegin + mPos] + "]";
+		return "[" + mDocids[mBegin + mPos] + "," + weight * mScores[mBegin + mPos] + "]";
 		/*
 		StringBuffer buf = new StringBuffer();
 		buf.append("[");
@@ -123,5 +125,4 @@ public class BlockEnumerator
 	{
 		this.mPos = -1;
 	}
-
 }

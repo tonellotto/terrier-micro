@@ -30,6 +30,7 @@ import it.cnr.isti.hpclab.manager.RankedManager;
 import it.cnr.isti.hpclab.matching.MatchingSetupTest;
 import it.cnr.isti.hpclab.matching.structures.ResultSet;
 import it.cnr.isti.hpclab.matching.structures.SearchRequest;
+import it.cnr.isti.hpclab.matching.structures.query.QueryParserException;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -151,7 +152,7 @@ public class RankedAndTest extends MatchingSetupTest
 		System.err.println("Intersection of terms \"" + query + "\" contains " + docids.size() + " documents");
 	}
 	
-	@Test public void originalRankedAnd() throws IOException
+	@Test public void originalRankedAnd() throws IOException, QueryParserException
 	{		
 		MatchingConfiguration.set(Property.TOP_K, "100000000");
 		
@@ -176,7 +177,7 @@ public class RankedAndTest extends MatchingSetupTest
 		}
 	}
 	
-	@Test public void eliasFanoRankedAnd() throws IOException
+	@Test public void eliasFanoRankedAnd() throws IOException, QueryParserException
 	{		
 		MatchingConfiguration.set(Property.TOP_K, "100000000");
 		

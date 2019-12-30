@@ -87,13 +87,18 @@ public class BlockMaxScoreIndex
 		this.totalBlocks = mOffsetsArray[numEntries + 1];
 	}
 
-	public BlockEnumerator get(int i) throws IOException
+	public BlockEnumerator get(final int i) throws IOException
+	{
+		return get(i, 1.0f);
+	}
+	
+	public BlockEnumerator get(final int i, final float weight) throws IOException
 	{
 		int num_blocks = (int) (( i == numEntries - 1 )
 			  	   ? totalBlocks - mOffsetsArray[i + 1]
 		           : mOffsetsArray[i + 2] - mOffsetsArray[i + 1]);
 
-		return new BlockEnumerator(mOffsetsArray[i + 1], num_blocks, mDocidsArray, mScoresArray);
+		return new BlockEnumerator(mOffsetsArray[i + 1], num_blocks, mDocidsArray, mScoresArray, weight);
 	}
 	
 	public int getBlockSize()

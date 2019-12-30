@@ -58,17 +58,22 @@ public class RankedOr implements MatchingAlgorithm
 		float currentScore = 0.0f;
         while (currentDocid < to) {
         	int nextDocid = Integer.MAX_VALUE;
+        	int numRequired = 0;
         	for (int i = 0; i < enums.size(); i++) {
         		IterablePosting p = enums.get(i).posting;
         		if (p.getId() == currentDocid) {
-        			currentScore += wm.score(1, p, enums.get(i).entry);
+        			currentScore += wm.score(enums.get(i).qtf, p, enums.get(i).entry) * enums.get(i).weight;
         			manager.processedPostings += 1;
         			p.next();
+        			if (enums.get(i).term.isRequired())
+        				numRequired++;
         		}
         		if (p.getId() < nextDocid)
         			nextDocid = p.getId();
         	}
-        	heap.insert(new Result(currentDocid, currentScore));
+        	if (numRequired == manager.numRequired)
+        		heap.insert(new Result(currentDocid, currentScore));
+        	
         	currentDocid = nextDocid;
         	currentScore = 0.0f;
         }

@@ -26,84 +26,64 @@ import java.net.URL;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.terrier.terms.BaseTermPipelineAccessor;
-import org.terrier.terms.TermPipelineAccessor;
+// import org.terrier.terms.BaseTermPipelineAccessor;
+// import org.terrier.terms.TermPipelineAccessor;
+
+import it.cnr.isti.hpclab.matching.structures.query.QueryParserException;
 
 public class QueryTest 
 {
-	private static TermPipelineAccessor tpa = null;
 	private static final String query1 = "opinionated";
 	private static final String query2 = "definition gravitational";
 	private static final String query3 = "obama family tree";
 	private static final String query4 = "obama family tree obama family tree";
-	private static final String query5 = "a fox can not know the black fox fox";
+	// private static final String query5 = "a fox can not know the black fox fox";
 
 	@Before
 	public void LoadPipeline()
 	{
 		System.setProperty("terrier.home", System.getProperty("user.dir"));
 		
-		final String[] pipes = System.getProperty("termpipelines", "Stopwords,PorterStemmer").trim().split("\\s*,\\s*");
+		// final String[] pipes = System.getProperty("termpipelines", "Stopwords,PorterStemmer").trim().split("\\s*,\\s*");
 		
 		URL url = Query.class.getResource("/stopword-list.txt");
 		System.setProperty("stopwords.filename", url.toString());
-		tpa = new BaseTermPipelineAccessor(pipes);		
+		// tpa = new BaseTermPipelineAccessor(pipes);		
 	}
 
-	@Test public void testQuery1()
+	@Test public void testQuery1() throws QueryParserException
 	{		
 		Query q = new Query(query1);
 		assertEquals(query1, q.getOriginalQuery());
 		assertEquals(q.getNumberOfTerms(), 1);
 		assertEquals(q.getNumberOfUniqueTerms(), 1);
 		System.out.println(q + " [original is " + q.getOriginalQuery() + "]");
-		q.applyTermPipeline(tpa);
-		System.out.println(q + " [original is " + q.getOriginalQuery() + "]");
 	}
 	
-	@Test public void testQuery2()
+	@Test public void testQuery2() throws QueryParserException
 	{		
 		Query q = new Query(query2);
 		assertEquals(query2, q.getOriginalQuery());
 		assertEquals(q.getNumberOfTerms(), 2);
 		assertEquals(q.getNumberOfUniqueTerms(), 2);
 		System.out.println(q + " [original is " + q.getOriginalQuery() + "]");
-		q.applyTermPipeline(tpa);
-		System.out.println(q + " [original is " + q.getOriginalQuery() + "]");
 	}
 
-	@Test public void testQuery3()
+	@Test public void testQuery3() throws QueryParserException
 	{		
 		Query q = new Query(query3);
 		assertEquals(query3, q.getOriginalQuery());
 		assertEquals(q.getNumberOfTerms(), 3);
 		assertEquals(q.getNumberOfUniqueTerms(), 3);
 		System.out.println(q + " [original is " + q.getOriginalQuery() + "]");
-		q.applyTermPipeline(tpa);
-		System.out.println(q + " [original is " + q.getOriginalQuery() + "]");
 	}
 
-	@Test public void testQuery4()
+	@Test public void testQuery4() throws QueryParserException
 	{		
 		Query q = new Query(query4);
 		assertEquals(query4, q.getOriginalQuery());
 		assertEquals(q.getNumberOfTerms(), 6);
 		assertEquals(q.getNumberOfUniqueTerms(), 3);
-		System.out.println(q + " [original is " + q.getOriginalQuery() + "]");
-		q.applyTermPipeline(tpa);
-		System.out.println(q + " [original is " + q.getOriginalQuery() + "]");
-	}
-
-	@Test public void testQuery_TPA()
-	{		
-		Query q = new Query(query5);
-		assertEquals(query5, q.getOriginalQuery());
-		assertEquals(q.getNumberOfTerms(), 9);
-		assertEquals(q.getNumberOfUniqueTerms(), 7);
-		System.out.println(q + " [original is " + q.getOriginalQuery() + "]");
-		q.applyTermPipeline(tpa);
-		assertEquals(q.getNumberOfTerms(), 6);
-		assertEquals(q.getNumberOfUniqueTerms(), 4);
 		System.out.println(q + " [original is " + q.getOriginalQuery() + "]");
 	}
 }

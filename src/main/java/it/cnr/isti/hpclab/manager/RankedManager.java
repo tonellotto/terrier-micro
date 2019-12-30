@@ -31,7 +31,8 @@ import it.cnr.isti.hpclab.annotations.Managing;
 import it.cnr.isti.hpclab.matching.structures.ResultSet;
 import it.cnr.isti.hpclab.matching.structures.SearchRequest;
 import it.cnr.isti.hpclab.matching.structures.TopQueue;
-import it.cnr.isti.hpclab.matching.structures.Query.RuntimeProperty;
+import it.cnr.isti.hpclab.matching.structures.query.QueryTerm;
+import it.cnr.isti.hpclab.matching.structures.QueryProperties.RuntimeProperty;
 import it.cnr.isti.hpclab.matching.structures.resultset.EmptyResultSet;
 import it.cnr.isti.hpclab.matching.structures.resultset.ScoredResultSet;
 
@@ -83,7 +84,7 @@ public class RankedManager extends Manager
 		
         srq.getQuery().addMetadata(RuntimeProperty.FINAL_THRESHOLD,    Float.toString(heap.threshold()));
         srq.getQuery().addMetadata(RuntimeProperty.INITIAL_THRESHOLD,  Float.toString(threshold));
-        srq.getQuery().addMetadata(RuntimeProperty.NUM_RESULTS, Integer.toString(heap.size()));
+        srq.getQuery().addMetadata(RuntimeProperty.NUM_RESULTS, 	   Integer.toString(heap.size()));
 	}
 
 	public static float parseFloat(String s)
@@ -94,8 +95,8 @@ public class RankedManager extends Manager
 	}
 
 	@Override
-	protected MatchingEntry entryFrom(final String term, final IterablePosting posting, final LexiconEntry entry) throws IOException
+	protected MatchingEntry entryFrom(final int qtf, final QueryTerm term, final IterablePosting posting, final LexiconEntry entry) throws IOException
 	{
-		return new MatchingEntry(term, posting, entry);
+		return new MatchingEntry(qtf, term, posting, entry);
 	}	
 }

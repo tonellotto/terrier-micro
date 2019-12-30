@@ -30,6 +30,7 @@ import it.cnr.isti.hpclab.manager.WandManager;
 import it.cnr.isti.hpclab.matching.MatchingSetupTest;
 import it.cnr.isti.hpclab.matching.structures.ResultSet;
 import it.cnr.isti.hpclab.matching.structures.SearchRequest;
+import it.cnr.isti.hpclab.matching.structures.query.QueryParserException;
 import it.cnr.isti.hpclab.maxscore.MSGenerator;
 import it.cnr.isti.hpclab.maxscore.structures.MaxScoreIndex;
 
@@ -135,7 +136,7 @@ public class WandTest extends MatchingSetupTest
 		efIndex.close();
 	}
 	
-	private ResultSet getRankedResults() throws IOException
+	private ResultSet getRankedResults() throws IOException, QueryParserException
 	{
 		MatchingConfiguration.set(Property.IGNORE_LOW_IDF_TERMS, "false");
 		MatchingConfiguration.set(Property.MATCHING_ALGORITHM_CLASSNAME, "it.cnr.isti.hpclab.matching.RankedOr");
@@ -148,7 +149,7 @@ public class WandTest extends MatchingSetupTest
 		return rs;
 	}
 
-	@Test public void rankFull() throws IOException
+	@Test public void rankFull() throws IOException, QueryParserException
 	{
 		MatchingConfiguration.set(Property.TOP_K, "10000");
 		
@@ -170,7 +171,7 @@ public class WandTest extends MatchingSetupTest
 		MatchingSetupTest.Compare(correct, current);	
 	}
 	
-	@Test public void top10() throws IOException
+	@Test public void top10() throws IOException, QueryParserException
 	{
 		MatchingConfiguration.set(Property.TOP_K, "10");
 		
@@ -192,7 +193,7 @@ public class WandTest extends MatchingSetupTest
 		MatchingSetupTest.Compare(correct, current);	
 	}
 
-	@Test public void top3() throws IOException
+	@Test public void top3() throws IOException, QueryParserException
 	{
 		MatchingConfiguration.set(Property.TOP_K, "3");
 		

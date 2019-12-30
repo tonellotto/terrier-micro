@@ -30,6 +30,7 @@ import it.cnr.isti.hpclab.manager.Manager;
 import it.cnr.isti.hpclab.manager.RankedManager;
 import it.cnr.isti.hpclab.matching.structures.ResultSet;
 import it.cnr.isti.hpclab.matching.structures.SearchRequest;
+import it.cnr.isti.hpclab.matching.structures.query.QueryParserException;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -64,6 +65,8 @@ public class RankedAndTest extends MatchingSetupTest
 	private static final String query3 = "page new 1996";
 	private static final String query1 = "view";
 	private static final String query2 = "top view";
+	
+	private static final String query22 = "top top view view";
 
 	private String query;
 	private String model;
@@ -80,9 +83,9 @@ public class RankedAndTest extends MatchingSetupTest
 	public static Collection<Object[]> models_queries()
 	{
 		return Arrays.asList(new Object[][]	{ 
-			{query1,"BM25"},  {query2,"BM25"},  {query3,"BM25"},  {query4,"BM25"},  {query5,"BM25"},
-			{query1,"LM"},    {query2,"LM"},    {query3,"LM"},    {query4,"LM"},    {query5,"LM"},
-			{query1,"DLH13"}, {query2,"DLH13"}, {query3,"DLH13"}, {query4,"DLH13"}, {query5,"DLH13"}
+			{query1,"BM25"},  {query2,"BM25"},  {query3,"BM25"},  {query4,"BM25"},  {query5,"BM25"},  {query22,"BM25"},
+			{query1,"LM"},    {query2,"LM"},    {query3,"LM"},    {query4,"LM"},    {query5,"LM"},    {query22,"LM"},
+			{query1,"DLH13"}, {query2,"DLH13"}, {query3,"DLH13"}, {query4,"DLH13"}, {query5,"DLH13"}, {query22,"DLH13"}
 		});
 	}
 
@@ -150,7 +153,7 @@ public class RankedAndTest extends MatchingSetupTest
 		System.err.println("Intersection of terms \"" + query + "\" contains " + docids.size() + " documents");
 	}
 	
-	@Test public void originalRankedAnd() throws IOException
+	@Test public void originalRankedAnd() throws IOException, QueryParserException
 	{		
 		MatchingConfiguration.set(Property.TOP_K, "100000000");
 		
@@ -175,7 +178,7 @@ public class RankedAndTest extends MatchingSetupTest
 		}
 	}
 	
-	@Test public void eliasFanoRankedAnd() throws IOException
+	@Test public void eliasFanoRankedAnd() throws IOException, QueryParserException
 	{		
 		MatchingConfiguration.set(Property.TOP_K, "100000000");
 		

@@ -29,6 +29,7 @@ import it.cnr.isti.hpclab.manager.RankedManager;
 import it.cnr.isti.hpclab.manager.WandManager;
 import it.cnr.isti.hpclab.matching.structures.ResultSet;
 import it.cnr.isti.hpclab.matching.structures.SearchRequest;
+import it.cnr.isti.hpclab.matching.structures.query.QueryParserException;
 import it.cnr.isti.hpclab.maxscore.MSGenerator;
 import it.cnr.isti.hpclab.maxscore.structures.MaxScoreIndex;
 
@@ -66,6 +67,14 @@ public class WandTest extends MatchingSetupTest
 	private static final String query1 = "view";
 	private static final String query2 = "top view";
 
+	private static final String query22 = "top top view view";
+	
+	private static final String query5w = "page^1.3 new^0.1 1996 1 mail^10";
+	private static final String query4w = "page^1.3 new^0.1 1996 1^0.001";
+	private static final String query3w = "page^1.3 new^0.1 1996";
+	private static final String query1w = "view^0.2";
+	private static final String query2w = "top^0.1 view^0.9";
+
 	private String query;
 	private String model;
 	
@@ -81,9 +90,12 @@ public class WandTest extends MatchingSetupTest
 	public static Collection<Object[]> models_queries()
 	{
 		return Arrays.asList(new Object[][]	{ 
-			{query1,"BM25"},  {query2,"BM25"},  {query3,"BM25"},  {query4,"BM25"},  {query5,"BM25"},
-			{query1,"LM"},    {query2,"LM"},    {query3,"LM"},    {query4,"LM"},    {query5,"LM"},
-			{query1,"DLH13"}, {query2,"DLH13"}, {query3,"DLH13"}, {query4,"DLH13"}, {query5,"DLH13"}
+			{query1,"BM25"},  {query2,"BM25"},  {query3,"BM25"},  {query4,"BM25"},  {query5,"BM25"},  {query22,"BM25"},
+			{query1,"LM"},    {query2,"LM"},    {query3,"LM"},    {query4,"LM"},    {query5,"LM"},    {query22,"LM"},
+			{query1,"DLH13"}, {query2,"DLH13"}, {query3,"DLH13"}, {query4,"DLH13"}, {query5,"DLH13"}, {query22,"DLH13"},
+			{query1w,"BM25"},  {query2w,"BM25"},  {query3w,"BM25"},  {query4w,"BM25"},  {query5w,"BM25"},
+			{query1w,"LM"},    {query2w,"LM"},    {query3w,"LM"},    {query4w,"LM"},    {query5w,"LM"},
+			{query1w,"DLH13"}, {query2w,"DLH13"}, {query3w,"DLH13"}, {query4w,"DLH13"}, {query5w,"DLH13"}
 		});
 	}
 	
@@ -134,7 +146,7 @@ public class WandTest extends MatchingSetupTest
 		efIndex.close();
 	}
 	
-	private ResultSet getRankedResults() throws IOException
+	private ResultSet getRankedResults() throws IOException, QueryParserException
 	{
 		MatchingConfiguration.set(Property.IGNORE_LOW_IDF_TERMS, "false");
 		MatchingConfiguration.set(Property.MATCHING_ALGORITHM_CLASSNAME, "it.cnr.isti.hpclab.matching.RankedOr");
@@ -147,7 +159,7 @@ public class WandTest extends MatchingSetupTest
 		return rs;
 	}
 
-	@Test public void rankFull() throws IOException
+	@Test public void rankFull() throws IOException, QueryParserException
 	{
 		MatchingConfiguration.set(Property.TOP_K, "10000");
 		
@@ -169,7 +181,7 @@ public class WandTest extends MatchingSetupTest
 		MatchingSetupTest.Compare(correct, current);	
 	}
 	
-	@Test public void top10() throws IOException
+	@Test public void top10() throws IOException, QueryParserException
 	{
 		MatchingConfiguration.set(Property.TOP_K, "10");
 		
@@ -191,7 +203,7 @@ public class WandTest extends MatchingSetupTest
 		MatchingSetupTest.Compare(correct, current);	
 	}
 
-	@Test public void top3() throws IOException
+	@Test public void top3() throws IOException, QueryParserException
 	{
 		MatchingConfiguration.set(Property.TOP_K, "3");
 		

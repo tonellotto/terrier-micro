@@ -22,6 +22,7 @@ package it.cnr.isti.hpclab.parallel;
 
 import it.cnr.isti.hpclab.MatchingConfiguration;
 import it.cnr.isti.hpclab.MatchingConfiguration.Property;
+import it.cnr.isti.hpclab.matching.structures.query.QueryParserException;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -35,7 +36,7 @@ public class ParallelRetrieve
 		ApplicationSetup.setProperty("terrier.index.retrievalLoadingProfile.default","false");
 	}
 
-	public static void main(String args[]) throws IOException
+	public static void main(String args[]) throws IOException, QueryParserException
 	{	
 		System.err.println("Performing retrieval with the following parameters:");
 		for (Property p: Property.values())

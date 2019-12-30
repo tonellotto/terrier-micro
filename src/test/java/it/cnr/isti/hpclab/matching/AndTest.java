@@ -30,6 +30,7 @@ import it.cnr.isti.hpclab.manager.BooleanManager;
 import it.cnr.isti.hpclab.manager.Manager;
 import it.cnr.isti.hpclab.matching.structures.ResultSet;
 import it.cnr.isti.hpclab.matching.structures.SearchRequest;
+import it.cnr.isti.hpclab.matching.structures.query.QueryParserException;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -160,7 +161,7 @@ public class AndTest extends MatchingSetupTest
 		System.err.println("Intersection of terms \"" + query + "\" contains " + docids.size() + " documents");
 	}
 	
-	@Test public void originalAnd() throws IOException
+	@Test public void originalAnd() throws IOException, QueryParserException
 	{
 		MatchingConfiguration.set(Property.TOP_K, "100000000");
 		getAndCorrectResults();
@@ -183,7 +184,7 @@ public class AndTest extends MatchingSetupTest
 			assertEquals(andDocids[i], docids.getInt(i));
 	}
 	
-	@Test public void eliasFanoAnd() throws IOException
+	@Test public void eliasFanoAnd() throws IOException, QueryParserException
 	{
 		MatchingConfiguration.set(Property.TOP_K, "100000000");
 		getAndCorrectResults();

@@ -68,7 +68,7 @@ public class RankedAnd implements MatchingAlgorithm
         	if (i == enums.size()) {
         		currentScore = 0.0f;
         		for (int j = 0; j < enums.size(); j++) {
-        			currentScore += wm.score(1, enums.get(j).posting, enums.get(j).entry);
+        			currentScore += wm.score(enums.get(j).qtf, enums.get(j).posting, enums.get(j).entry) * enums.get(j).weight;
         		}
         		manager.processedPostings += enums.size();
         		heap.insert(new Result(currentDocid, currentScore));

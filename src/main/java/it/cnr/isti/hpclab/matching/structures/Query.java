@@ -22,11 +22,21 @@ package it.cnr.isti.hpclab.matching.structures;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import it.cnr.isti.hpclab.MatchingConfiguration;
+import it.cnr.isti.hpclab.MatchingConfiguration.Property;
+import it.cnr.isti.hpclab.matching.structures.query.QueryParserException;
+import it.cnr.isti.hpclab.matching.structures.query.QueryTerm;
+import it.cnr.isti.hpclab.matching.structures.query.SimpleQueryParser;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 
+import org.terrier.terms.BaseTermPipelineAccessor;
 import org.terrier.terms.TermPipelineAccessor;
 
 /**
@@ -36,70 +46,62 @@ import org.terrier.terms.TermPipelineAccessor;
  * that must correspond to the same processors pipeline used at indexing time. Term processing is guaranteed
  * to be executed only once: subsequent invocations will cause no further processing.
  */
-public class Query 
-{	
-	public enum RuntimeProperty 
-	{
-		PROCESSING_TIME 	("processing.time"),
-		QUERY_LENGTH    	("query.length"),
-		PROCESSED_POSTINGS 	("processed.postings"),
-		PARTIALLY_PROCESSED_DOCUMENTS 	("partially.processed.documents"),
-		NUM_PIVOTS					 	("num.pivots"),
-		TOTAL_POSTINGS		("total.postings"),
-		PROCESSED_TERMS 	("processed.terms"),
-		PROCESSED_TERMS_DF 	("processed.terms.df"),
-		PROCESSED_TERMS_MS 	("processed.terms.ms"),
-		NUM_RESULTS 		("num.results"),
-		
-		INITIAL_THRESHOLD 	("initial.threshold"),
-		FINAL_THRESHOLD 	("final.threshold"),
+public class Query extends QueryProperties
+{
+	private static final SimpleQueryParser parser = new SimpleQueryParser();
+	private static TermPipelineAccessor TPA = null;
 	
-		QUERY_TERMS			("query.terms"),
-				
-		NULL                ("");
-		  
-		private final String mName;
-		
-		private RuntimeProperty(final String name)
-		{
-			mName = name;
+	static {
+		final String[] pipes = MatchingConfiguration.get(Property.TERM_PIPELINE).trim().split("\\s*,\\s*");
+	
+		// The following does not work because of the new FileSystem stuff in org.terrier.utility
+		// URL url = Queries.class.getResource("/stopword-list.txt");
+		// Setup.setProperty("stopwords.filename", url.toString());
+		// The following hack creates a temporary file with the stopword-list.txt contents copied in
+		File file = null;
+		try {
+			InputStream input = SearchRequest.class.getResourceAsStream("/stopword-list.txt");
+			file = File.createTempFile("tempfile", ".tmp");
+			OutputStream out = new FileOutputStream(file);
+			
+			int read;
+			byte[] bytes = new byte[1024];
+			while ((read = input.read(bytes)) != -1) {
+				out.write(bytes, 0, read);
+			}
+			out.close();
+			
+			System.setProperty("stopwords.filename", file.toString());
+			file.deleteOnExit();
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
-		
-		@Override
-		public String toString()
-		{
-			return mName;
-		}		
+
+		TPA = new BaseTermPipelineAccessor(pipes);
 	}
-	
+
 	private boolean mProcessed = false;
 	private String mOriginalQuery;
 			
-	private Object2IntMap<String> mTerms;
-	private Object2ObjectMap<RuntimeProperty, String> mMetadata;
-	private Object2ObjectMap<String, String> mMetadata_str;
+	private Object2IntMap<QueryTerm> mTerms;
 	
 	/**
 	 * Creates a new query object, wrapping the given string as textual query source.
 	 * 
 	 * @param queryText the input string representing the query (must be not null).
+	 * @throws QueryParserException 
 	 */
-	public Query(final String queryText)
+	public Query(final String queryText) throws QueryParserException
 	{
 		checkNotNull(queryText);
 		this.mOriginalQuery = queryText.trim();
 		
-		this.mTerms 	   = new Object2IntArrayMap<String>();
-		this.mMetadata     = new Object2ObjectArrayMap<>();
-		this.mMetadata_str = new Object2ObjectArrayMap<>();
+		this.mTerms 	   = new Object2IntArrayMap<QueryTerm>();
 		
-		int pos = 0;
-		int  end;
-        while ((end = queryText.indexOf(' ', pos)) >= 0) {
-        	addTerm(queryText.substring(pos, end));
-            pos = end + 1;
-        }
-        addTerm(queryText.substring(pos));
+		for (QueryTerm qt: parser.parse(mOriginalQuery))
+			addTerm(qt);
+		
+		applyTermPipeline();
 	}
 	
 	/**
@@ -107,16 +109,18 @@ public class Query
 	 * 
 	 * @param t the string representing the term (must be not null)
 	 */
-	private void addTerm(final String t)
+	private void addTerm(final QueryTerm sqt)
 	{
-		checkNotNull(t);
-		String tmp = t.trim();
+		checkNotNull(sqt);
+		checkNotNull(sqt.getQueryTerm());
+		String tmp = sqt.getQueryTerm().trim();
 		
 		if ("".equals(tmp))
 			return;
 
-		int count = mTerms.getInt(tmp);
-		mTerms.put(tmp, count + 1);
+		int count = mTerms.getInt(sqt);
+		sqt.setQueryTerm(tmp);
+		mTerms.put(sqt, count + 1);
 	}
 		
 	/**
@@ -147,9 +151,9 @@ public class Query
 	 * 
 	 * @return an array containing the copies of the original query's unique terms
 	 */
-	public String[] getUniqueTerms()
+	public QueryTerm[] getUniqueTerms()
 	{
-		return mTerms.keySet().toArray(new String[0]);
+		return mTerms.keySet().toArray(new QueryTerm[0]);
 	}
 	
 	/**
@@ -168,10 +172,10 @@ public class Query
 	 * @param t the term to return occurrences of (must be not null)
 	 * @return the number of occurrences of input term 
 	 */
-	public int getTermCount(final String t)
+	public int getTermCount(final QueryTerm qt)
 	{
-		checkNotNull(t);
-		return mTerms.getInt(t);
+		checkNotNull(qt);
+		return mTerms.getInt(qt);
 	}
 	
 	/**
@@ -188,23 +192,22 @@ public class Query
 	 * Applies a given term pipeline to stored terms, changing the underlying data structure accordingly.
 	 * If processed once, further term pipelines will produce no effect.
 	 * 
-	 * @param tpa the term pipeline to apply (must be not null)
-	 * 
 	 * @return <tt>true</tt> if there is at least one term left after processing, <tt>false</tt> otherwise.
 	 */
-	public boolean applyTermPipeline(final TermPipelineAccessor tpa)
-	{
-		checkNotNull(tpa);
-		
+	private boolean applyTermPipeline()
+	{	
 		if (mProcessed)
 			return !mTerms.isEmpty();
 		
-		Object2IntMap<String> newTerms =  new Object2IntArrayMap<String>();
+		Object2IntMap<QueryTerm> newTerms =  new Object2IntArrayMap<QueryTerm>();
 		
-		for (String oldTerm: mTerms.keySet()) {
-			String newTerm = tpa.pipelineTerm(oldTerm);
-			if (newTerm != null && !"".equals(newTerm))
-				newTerms.put(newTerm, mTerms.getInt(oldTerm));
+		for (QueryTerm oldQueryTerm: mTerms.keySet()) {
+			final int count = mTerms.getInt(oldQueryTerm);
+			String newTerm = TPA.pipelineTerm(oldQueryTerm.getQueryTerm());
+			if (newTerm != null && !"".equals(newTerm)) {
+				oldQueryTerm.setQueryTerm(newTerm);
+				newTerms.put(oldQueryTerm, count);
+			}
 		}
 		
 		mTerms = newTerms;
@@ -221,52 +224,13 @@ public class Query
 	public String toString()
 	{
 		StringBuffer buf = new StringBuffer();
-		for (String term: mTerms.keySet()) { 
-			buf.append(term);
-			int num = mTerms.getInt(term);
+		for (QueryTerm qt: mTerms.keySet()) { 
+			buf.append(qt);
+			int num = mTerms.getInt(qt);
 			if (num != 1)
 				buf.append(" (x" + num + ")");
 			buf.append(' ');
 		}
 		return buf.toString();
 	}
-	
-	/**
-	 * Add a custom metadata to the object, as a key value pair of strings.
-	 * 
-	 * @param key the key
-	 * @param value the value
-	 */
-	public void addMetadata(final RuntimeProperty key, final String value)
-	{
-		// checkNotNull(key);
-		checkNotNull(value);
-		mMetadata.put(key, value);
-	}
-
-	public void addMetadata(final String key, final String value)
-	{
-		checkNotNull(key);
-		checkNotNull(value);
-		mMetadata_str.put(key, value);
-	}
-
-	/**
-	 * Returns the value associated to the specified key.
-
-	 * @param key the key
-	 * @return the corresponding value, or <tt>null</tt> if no value was present for the given key
-	 */
-	public String getMetadata(final RuntimeProperty key)
-	{
-		// checkNotNull(key);
-		return mMetadata.get(key);
-	}
-	
-	public String getMetadata(final String key)
-	{
-		checkNotNull(key);
-		return mMetadata_str.get(key);
-	}
-
 }

@@ -65,7 +65,8 @@ public class Wand implements MatchingAlgorithm
                 if (enums.get(pivot).posting.getId() >= to) {
                     break;
                 }
-                upper_bound += enums.get(pivot).maxscore;
+                upper_bound += enums.get(pivot).qtf * enums.get(pivot).maxscore;
+                
                 if (heap.wouldEnter(upper_bound)) {
                     found_pivot = true;
                     break;
@@ -84,16 +85,21 @@ public class Wand implements MatchingAlgorithm
             if (pivot_id == enums.get(0).posting.getId()) {
             	manager.partiallyProcessedDocuments++;
                 float score = 0;
+    			int numRequired = 0;
                 for (int i = 0; i < enums.size(); i++) {
                 	IterablePosting p = enums.get(i).posting;
                 	if (p.getId() != pivot_id) {
                 		break;
                 	}
-        			score += wm.score(1, p, enums.get(i).entry);
+        			score += wm.score(enums.get(i).qtf, p, enums.get(i).entry) * enums.get(i).weight;
+        			if (enums.get(i).term.isRequired())
+        				numRequired++;
+
         			manager.processedPostings += 1;
         			p.next();
                 }
-                heap.insert(new Result(pivot_id, score));
+                if (numRequired == manager.numRequired) 
+                	heap.insert(new Result(pivot_id, score));
                 // resort by docid
                 Collections.sort(enums, MatchingEntry.SORT_BY_DOCID);
             } else {

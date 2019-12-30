@@ -37,7 +37,8 @@ import it.cnr.isti.hpclab.matching.MatchingAlgorithm;
 import it.cnr.isti.hpclab.matching.structures.ResultSet;
 import it.cnr.isti.hpclab.matching.structures.SearchRequest;
 import it.cnr.isti.hpclab.matching.structures.WeightingModel;
-import it.cnr.isti.hpclab.matching.structures.Query.RuntimeProperty;
+import it.cnr.isti.hpclab.matching.structures.query.QueryTerm;
+import it.cnr.isti.hpclab.matching.structures.QueryProperties.RuntimeProperty;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -53,9 +54,12 @@ public abstract class Manager implements Closeable
 	protected static final Logger LOGGER = Logger.getLogger(Manager.class);
 	protected static boolean IGNORE_LOW_IDF_TERMS = MatchingConfiguration.getBoolean(Property.IGNORE_LOW_IDF_TERMS);
 	
-	protected Index mIndex = null;
 	public WeightingModel mWeightingModel = null;
+	public int numRequired = 0;
+	
+	protected Index mIndex = null;
 	protected MatchingAlgorithm mMatchingAlgorithm = null;
+	
 	
 	public List<MatchingEntry> enums;
 
@@ -162,7 +166,7 @@ public abstract class Manager implements Closeable
 		}
 	}
 	
-	protected abstract MatchingEntry entryFrom(final String term, final IterablePosting posting, final LexiconEntry entry) throws IOException;
+	protected abstract MatchingEntry entryFrom(final int qtf, final QueryTerm term, final IterablePosting posting, final LexiconEntry entry) throws IOException;
 	
 	protected void open_enums(final SearchRequest searchRequest) throws IOException
 	{	
@@ -171,17 +175,20 @@ public abstract class Manager implements Closeable
 		final int num_docs = mIndex.getCollectionStatistics().getNumberOfDocuments();
 		
 		// We look in the index and filter out common terms
-		for (String term: searchRequest.getQueryTerms()) {
-			LexiconEntry le = mIndex.getLexicon().getLexiconEntry(term);
+		for (QueryTerm queryTerm: searchRequest.getQueryTerms()) {
+			LexiconEntry le = mIndex.getLexicon().getLexiconEntry(queryTerm.getQueryTerm());
 			if (le == null) {
-				LOGGER.warn("Term not found in index: " + term);
+				LOGGER.warn("Term not found in index: " + queryTerm.getQueryTerm());
 			} else if (IGNORE_LOW_IDF_TERMS && le.getFrequency() > num_docs) {
-				LOGGER.warn("Term " + term + " has low idf - ignored from scoring.");
+				LOGGER.warn("Term " + queryTerm.getQueryTerm() + " has low idf - ignored from scoring.");
 			} else {
 				IterablePosting ip = mIndex.getInvertedIndex().getPostings(le);
 				ip.next();
 				// enums.add(new MatchingEntry(term, ip, le));
-				enums.add(entryFrom(term, ip, le));
+				int qtf = searchRequest.getQueryTermFrequency(queryTerm);
+				enums.add(entryFrom(qtf, queryTerm, ip, le));
+				if (queryTerm.isRequired())
+					numRequired++;
 			}
 		}		
 	}	

@@ -39,9 +39,9 @@ import it.cnr.isti.hpclab.MatchingConfiguration.Property;
 import it.cnr.isti.hpclab.manager.BooleanManager;
 import it.cnr.isti.hpclab.manager.Manager;
 
-import it.cnr.isti.hpclab.matching.structures.Query.RuntimeProperty;
+import it.cnr.isti.hpclab.matching.structures.QueryProperties.RuntimeProperty;
 import it.cnr.isti.hpclab.matching.structures.SearchRequest;
-
+import it.cnr.isti.hpclab.matching.structures.query.QueryParserException;
 import it.cnr.isti.hpclab.matching.util.IntUtils.ClusteredGenerator;
 
 public class Benchmark 
@@ -94,7 +94,7 @@ public class Benchmark
 	}
 	
 	@Test
-	public void test_o_2() throws IOException
+	public void test_o_2() throws IOException, QueryParserException
 	{	
 		System.err.println(IndexUtils.getInvertedIndexSize(originalIndex));
 		
@@ -126,7 +126,7 @@ public class Benchmark
 	}
 	
 	@Test
-	public void test_e_2() throws IOException
+	public void test_e_2() throws IOException, QueryParserException
 	{ 
 		System.err.println(IndexUtils.getInvertedIndexSize(efIndex));
 		

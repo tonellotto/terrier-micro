@@ -22,6 +22,7 @@ package it.cnr.isti.hpclab.parallel;
 
 import it.cnr.isti.hpclab.MatchingConfiguration;
 import it.cnr.isti.hpclab.MatchingConfiguration.Property;
+import it.cnr.isti.hpclab.matching.structures.query.QueryParserException;
 import it.cnr.isti.hpclab.matching.structures.query.QuerySource;
 import it.cnr.isti.hpclab.matching.structures.query.ThresholdQuerySource;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -90,7 +91,7 @@ public class ParallelQuerying
 		}
 	}
 	
-	public void processQueries() throws IOException 
+	public void processQueries() throws IOException, QueryParserException 
 	{
 		mQuerySource.reset();
 
@@ -123,7 +124,7 @@ public class ParallelQuerying
 					" seconds");
 	}
 
-	public void processQuery(final int queryId, final String query, final float threshold) throws IOException
+	public void processQuery(final int queryId, final String query, final float threshold) throws IOException, QueryParserException
 	{
 		try {
 			sSearchRequestQueue.put(new SearchRequestMessage(new SearchRequest(queryId, query)));
