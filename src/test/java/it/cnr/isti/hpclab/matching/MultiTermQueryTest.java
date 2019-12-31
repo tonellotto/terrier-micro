@@ -25,7 +25,7 @@ import it.cnr.isti.hpclab.MatchingConfiguration.Property;
 import it.cnr.isti.hpclab.ef.EliasFano;
 import it.cnr.isti.hpclab.ef.Generator;
 import it.cnr.isti.hpclab.manager.Manager;
-import it.cnr.isti.hpclab.manager.RankedManager;
+import it.cnr.isti.hpclab.manager.MaxScoreManager;
 import it.cnr.isti.hpclab.matching.structures.ResultSet;
 import it.cnr.isti.hpclab.matching.structures.SearchRequest;
 import it.cnr.isti.hpclab.matching.structures.query.QueryParserException;
@@ -133,7 +133,7 @@ public class MultiTermQueryTest extends MatchingSetupTest
 		MatchingConfiguration.set(Property.WEIGHTING_MODEL_CLASSNAME, model);
 		SearchRequest srq = new SearchRequest(1, query);
 		
-		Manager manager = new RankedManager(efIndex);
+		Manager manager = new MaxScoreManager(efIndex);
 		ResultSet rs = manager.run(srq);
 
 		return rs;
