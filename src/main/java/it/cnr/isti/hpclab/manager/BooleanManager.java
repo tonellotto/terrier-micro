@@ -43,10 +43,12 @@ public class BooleanManager extends Manager
 {
 	public IntList docids;		
 	
+	/*
 	public BooleanManager()
 	{
 		super();
 	}
+	*/
 	
 	public BooleanManager(final Index index)
 	{

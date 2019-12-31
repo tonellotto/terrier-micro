@@ -122,7 +122,7 @@ public class Benchmark
 			System.out.println("OR " + i + " " + df.format(Arrays.stream(runs[i]).average().getAsDouble()));
 		}
 		
-		manager.close();
+		// manager.close();
 	}
 	
 	@Test
@@ -154,7 +154,7 @@ public class Benchmark
 			System.out.println("EF " + i + " " + df.format(Arrays.stream(runs[i]).average().getAsDouble()));
 		}
 		
-		manager.close();
+		// manager.close();
 	}
 
 }

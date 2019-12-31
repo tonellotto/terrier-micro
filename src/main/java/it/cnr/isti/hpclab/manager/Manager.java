@@ -49,7 +49,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * It basically manages the objects and configurations shared by all queries in a batch experiments,
  * and invokes the query processing algorithm.
  */
-public abstract class Manager implements Closeable
+public abstract class Manager // implements Closeable
 {
 	protected static final Logger LOGGER = Logger.getLogger(Manager.class);
 	protected static boolean IGNORE_LOW_IDF_TERMS = MatchingConfiguration.getBoolean(Property.IGNORE_LOW_IDF_TERMS);
@@ -69,10 +69,12 @@ public abstract class Manager implements Closeable
 	public long partiallyProcessedDocuments;
 	public long numPivots;
 
+	/*
 	public Manager()
 	{
 		this(null);
 	}
+	*/
 
 	public Manager(final Index index)
 	{
@@ -106,13 +108,9 @@ public abstract class Manager implements Closeable
 	protected void loadIndex(final Index index) 
 	{
 		if (index == null)
-			mIndex = Index.createIndex();
-		else 
-			mIndex = index;
-		if (mIndex == null) {
-			LOGGER.fatal("Failed to load index. " + Index.getLastIndexLoadError());
-			throw new IllegalArgumentException("Failed to load index: " + Index.getLastIndexLoadError());
-		}
+			LOGGER.fatal("Can't create manager with null index");
+		mIndex = index;
+
 		mWeightingModel.setup(mIndex);
 		mMatchingAlgorithm.setup(this);
 	}
@@ -143,11 +141,13 @@ public abstract class Manager implements Closeable
 		}
 	}
 
+	/*
 	@Override
 	public void close() throws IOException 
 	{
 		mIndex.close();
 	}
+	*/
 
 	abstract public ResultSet run(final SearchRequest srq) throws IOException;
 	

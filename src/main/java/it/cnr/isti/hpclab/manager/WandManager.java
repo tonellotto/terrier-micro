@@ -39,10 +39,12 @@ import it.cnr.isti.hpclab.maxscore.structures.MaxScoreIndex;
 @Managing(algorithms = "it.cnr.isti.hpclab.matching.And,it.cnr.isti.hpclab.matching.Wand")
 public class WandManager extends RankedManager
 {
+	/*
 	public WandManager()
 	{
 		super();
 	}
+	*/
 	
 	public WandManager(final Index index)
 	{

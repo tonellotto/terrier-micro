@@ -154,7 +154,7 @@ public class WandTest extends MatchingSetupTest
 		SearchRequest srq = new SearchRequest(1, query);
 		Manager manager = new RankedManager(efIndex);
 		ResultSet rs = manager.run(srq);
-		manager.close();
+		// manager.close();
 
 		return rs;
 	}
@@ -173,7 +173,7 @@ public class WandTest extends MatchingSetupTest
 		MatchingConfiguration.set(Property.WEIGHTING_MODEL_CLASSNAME, model);
 		Manager manager = new WandManager(efIndex);
 		ResultSet rs = manager.run(srq);
-		manager.close();
+		// manager.close();
 
 		ResultSet current = rs;
 		
@@ -195,7 +195,7 @@ public class WandTest extends MatchingSetupTest
 		MatchingConfiguration.set(Property.WEIGHTING_MODEL_CLASSNAME, model);
 		Manager manager = new WandManager(efIndex);
 		ResultSet rs = manager.run(srq);
-		manager.close();
+		// manager.close();
 
 		ResultSet current = rs;
 		
@@ -217,7 +217,7 @@ public class WandTest extends MatchingSetupTest
 		MatchingConfiguration.set(Property.WEIGHTING_MODEL_CLASSNAME, model);
 		Manager manager = new WandManager(efIndex);
 		ResultSet rs = manager.run(srq);
-		manager.close();
+		// manager.close();
 
 		ResultSet current = rs;
 		

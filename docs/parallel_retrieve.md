@@ -13,4 +13,4 @@ All query processing threads share the same configuration and query processing a
 
 A global shared queue manages all _search requests_, that are processed by _processing threads_ as soon as they are idle. When a search request is processed, it is managed by another shared queue, responsible for output generation.
 
-Communications, as well as query processing, is completely asyncrhonous, so there is **no ordering guarantee** that queries will be processed, and their output generated, as they are read from the query source.
+Communication, as well as query processing, is completely asynchronous, so there is **no ordering guarantee** that queries will be processed, and their output generated, as they are read from the query source.

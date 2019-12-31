@@ -174,7 +174,7 @@ public class AndTest extends MatchingSetupTest
 		
 		Manager manager = new BooleanManager(originalIndex);
 		ResultSet rs = manager.run(srq);
-		manager.close();
+		//manager.close();
 		
 		int[] andDocids = rs.docids();
 		
@@ -197,7 +197,7 @@ public class AndTest extends MatchingSetupTest
 		
 		Manager manager = new BooleanManager(efIndex);
 		ResultSet rs = manager.run(srq);
-		manager.close();
+		//manager.close();
 		
 		int[] andDocids = rs.docids();
 		

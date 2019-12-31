@@ -42,10 +42,12 @@ public class MaxScoreManager extends RankedManager
 {
 	public float upper_bounds[];
 
+	/*
 	public MaxScoreManager()
 	{
 		super();
 	}
+	*/
 	
 	public MaxScoreManager(final Index index)
 	{

@@ -45,10 +45,12 @@ public class BlockMaxWandManager extends WandManager
 {
 	public MatchingEntry[] local_enums;
 	
+	/*
 	public BlockMaxWandManager()
 	{
 		super();
 	}
+	*/
 	
 	public BlockMaxWandManager(final Index index)
 	{

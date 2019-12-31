@@ -42,10 +42,12 @@ public class RankedManager extends Manager
 	public TopQueue heap;
 	public float threshold;
 	
+	/*
 	public RankedManager()
 	{
 		super();
 	}
+	*/
 	
 	public RankedManager(final Index index)
 	{

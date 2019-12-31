@@ -23,6 +23,8 @@ package it.cnr.isti.hpclab.parallel;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
+import org.terrier.structures.Index;
+import org.terrier.structures.IndexOnDisk;
 
 import it.cnr.isti.hpclab.MatchingConfiguration;
 import it.cnr.isti.hpclab.MatchingConfiguration.Property;
@@ -36,6 +38,7 @@ public class ManagerThread extends Thread
 	
 	// Private variables
 	private final Manager mManager;
+	private IndexOnDisk mIndex;
 
 	// Shared variables
 	protected final BlockingQueue<SearchRequestMessage> sSearchRequestQueue;
@@ -47,11 +50,12 @@ public class ManagerThread extends Thread
 	private Manager create_manager() 
 	{
 		try {
+			mIndex = Index.createIndex();
 			String matchingAlgorithmClassName =  MatchingConfiguration.get(Property.MATCHING_ALGORITHM_CLASSNAME);
 			if (matchingAlgorithmClassName.indexOf('.') == -1)
 				matchingAlgorithmClassName = MatchingConfiguration.get(Property.DEFAULT_NAMESPACE) + matchingAlgorithmClassName;
 			String mManagerClassName = Class.forName(matchingAlgorithmClassName).asSubclass(MatchingAlgorithm.class).getAnnotation(Managed.class).by();
-			return (Manager) (Class.forName(mManagerClassName).asSubclass(Manager.class).getConstructor().newInstance());
+			return (Manager) (Class.forName(mManagerClassName).asSubclass(Manager.class).getConstructor().newInstance(mIndex));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -85,7 +89,8 @@ public class ManagerThread extends Thread
 				
 				sResultQueue.put(m);
 			}
-			mManager.close();
+			// mManager.close();
+			mIndex.close();
 			// notify I'm done to result writer with a poison pill
 			sResultQueue.put(new SearchRequestMessage(null));
 		} catch (Exception e) {

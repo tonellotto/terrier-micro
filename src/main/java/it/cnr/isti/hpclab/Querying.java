@@ -35,6 +35,8 @@ import java.io.Closeable;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
+import org.terrier.structures.Index;
+import org.terrier.structures.IndexOnDisk;
 
 import it.cnr.isti.hpclab.annotations.Managed;
 import it.cnr.isti.hpclab.manager.Manager;
@@ -57,15 +59,22 @@ public class Querying implements Closeable
 	protected int mMatchingQueryCount = 0;
 
 	/** Data structures */
+	protected IndexOnDisk  mIndex;
 	protected QuerySource  mQuerySource;
 	protected Manager      mManager;
 	protected ResultOutput mResultOutput;
 	
 	public Querying() 
 	{
+		this.createIndex();
 		this.createQuerySource();
 		this.createManager();
 		this.createResultOutput();
+	}
+	
+	protected void createIndex()
+	{
+		mIndex = Index.createIndex();
 	}
 	
 	protected void createManager() 
@@ -75,7 +84,7 @@ public class Querying implements Closeable
 			if (matchingAlgorithmClassName.indexOf('.') == -1)
 				matchingAlgorithmClassName = MatchingConfiguration.get(Property.DEFAULT_NAMESPACE) + matchingAlgorithmClassName;
 			String mManagerClassName = Class.forName(matchingAlgorithmClassName).asSubclass(MatchingAlgorithm.class).getAnnotation(Managed.class).by();
-			mManager = (Manager) (Class.forName(mManagerClassName).asSubclass(Manager.class).getConstructor().newInstance());
+			mManager = (Manager) (Class.forName(mManagerClassName).asSubclass(Manager.class).getConstructor().newInstance(mIndex));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -103,7 +112,8 @@ public class Querying implements Closeable
 	@Override
 	public void close() throws IOException 
 	{
-		mManager.close();
+		// mManager.close();
+		mIndex.close();
 		mResultOutput.close();
 	}
 
