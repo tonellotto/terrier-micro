@@ -165,7 +165,7 @@ public class RankedAndTest extends MatchingSetupTest
 		
 		Manager manager = new RankedManager(originalIndex);
 		ResultSet rs = manager.run(srq);
-		manager.close();
+		// manager.close();
 		
 		int[] andDocids = rs.docids();
 		
@@ -190,7 +190,7 @@ public class RankedAndTest extends MatchingSetupTest
 		
 		Manager manager = new RankedManager(efIndex);
 		ResultSet rs = manager.run(srq);
-		manager.close();
+		// manager.close();
 		
 		int[] andDocids = rs.docids();
 		

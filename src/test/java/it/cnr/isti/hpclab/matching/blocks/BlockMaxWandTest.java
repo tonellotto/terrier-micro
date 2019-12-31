@@ -161,7 +161,7 @@ public class BlockMaxWandTest extends MatchingSetupTest
 		SearchRequest srq = new SearchRequest(1, query);
 		Manager manager = new RankedManager(efIndex);
 		ResultSet rs = manager.run(srq);
-		manager.close();
+		//manager.close();
 
 		return rs;
 	}
@@ -180,7 +180,7 @@ public class BlockMaxWandTest extends MatchingSetupTest
 		MatchingConfiguration.set(Property.WEIGHTING_MODEL_CLASSNAME, model);
 		Manager manager = new BlockMaxWandManager(efIndex);
 		ResultSet rs = manager.run(srq);
-		manager.close();
+		//manager.close();
 
 		ResultSet current = rs;
 		
@@ -202,7 +202,7 @@ public class BlockMaxWandTest extends MatchingSetupTest
 		MatchingConfiguration.set(Property.WEIGHTING_MODEL_CLASSNAME, model);
 		Manager manager = new BlockMaxWandManager(efIndex);
 		ResultSet rs = manager.run(srq);
-		manager.close();
+		//manager.close();
 
 		ResultSet current = rs;
 		
@@ -224,7 +224,7 @@ public class BlockMaxWandTest extends MatchingSetupTest
 		MatchingConfiguration.set(Property.WEIGHTING_MODEL_CLASSNAME, model);
 		Manager manager = new BlockMaxWandManager(efIndex);
 		ResultSet rs = manager.run(srq);
-		manager.close();
+		//manager.close();
 
 		ResultSet current = rs;
 		

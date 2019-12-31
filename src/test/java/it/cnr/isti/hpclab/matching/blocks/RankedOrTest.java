@@ -169,7 +169,7 @@ public class RankedOrTest extends MatchingSetupTest
 		
 		Manager manager = new RankedManager(originalIndex);
 		ResultSet rs = manager.run(srq);
-		manager.close();
+		// manager.close();
 		
 		int[] orDocids = rs.docids();
 		
@@ -196,7 +196,7 @@ public class RankedOrTest extends MatchingSetupTest
 		
 		Manager manager = new RankedManager(efIndex);
 		ResultSet rs = manager.run(srq);
-		manager.close();
+		// manager.close();
 		
 		int[] orDocids = rs.docids();
 		

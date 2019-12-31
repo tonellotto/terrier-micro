@@ -84,7 +84,8 @@ public class Querying implements Closeable
 			if (matchingAlgorithmClassName.indexOf('.') == -1)
 				matchingAlgorithmClassName = MatchingConfiguration.get(Property.DEFAULT_NAMESPACE) + matchingAlgorithmClassName;
 			String mManagerClassName = Class.forName(matchingAlgorithmClassName).asSubclass(MatchingAlgorithm.class).getAnnotation(Managed.class).by();
-			mManager = (Manager) (Class.forName(mManagerClassName).asSubclass(Manager.class).getConstructor().newInstance(mIndex));
+			 
+			mManager = (Manager) Class.forName(mManagerClassName).asSubclass(Manager.class).getConstructor(Index.class).newInstance(mIndex);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

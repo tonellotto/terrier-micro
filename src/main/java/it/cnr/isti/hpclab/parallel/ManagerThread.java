@@ -55,7 +55,9 @@ public class ManagerThread extends Thread
 			if (matchingAlgorithmClassName.indexOf('.') == -1)
 				matchingAlgorithmClassName = MatchingConfiguration.get(Property.DEFAULT_NAMESPACE) + matchingAlgorithmClassName;
 			String mManagerClassName = Class.forName(matchingAlgorithmClassName).asSubclass(MatchingAlgorithm.class).getAnnotation(Managed.class).by();
-			return (Manager) (Class.forName(mManagerClassName).asSubclass(Manager.class).getConstructor().newInstance(mIndex));
+			
+			// return (Manager) (Class.forName(mManagerClassName).asSubclass(Manager.class).getConstructor().newInstance(mIndex));
+			return (Manager) Class.forName(mManagerClassName).asSubclass(Manager.class).getConstructor(Index.class).newInstance(mIndex);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

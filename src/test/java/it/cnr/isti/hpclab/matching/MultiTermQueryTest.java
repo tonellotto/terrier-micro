@@ -25,7 +25,6 @@ import it.cnr.isti.hpclab.MatchingConfiguration.Property;
 import it.cnr.isti.hpclab.ef.EliasFano;
 import it.cnr.isti.hpclab.ef.Generator;
 import it.cnr.isti.hpclab.manager.Manager;
-import it.cnr.isti.hpclab.manager.MaxScoreManager;
 import it.cnr.isti.hpclab.manager.RankedManager;
 import it.cnr.isti.hpclab.matching.structures.ResultSet;
 import it.cnr.isti.hpclab.matching.structures.SearchRequest;
@@ -130,7 +129,7 @@ public class MultiTermQueryTest extends MatchingSetupTest
 	private ResultSet getRankedResults(final String query) throws IOException, QueryParserException
 	{
 		MatchingConfiguration.set(Property.IGNORE_LOW_IDF_TERMS, "false");
-		MatchingConfiguration.set(Property.MATCHING_ALGORITHM_CLASSNAME, "it.cnr.isti.hpclab.matching.RankedOr");
+		MatchingConfiguration.set(Property.MATCHING_ALGORITHM_CLASSNAME, "it.cnr.isti.hpclab.matching.MaxScore");
 		MatchingConfiguration.set(Property.WEIGHTING_MODEL_CLASSNAME, model);
 		SearchRequest srq = new SearchRequest(1, query);
 		

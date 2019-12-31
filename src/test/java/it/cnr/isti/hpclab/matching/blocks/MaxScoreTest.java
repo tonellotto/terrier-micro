@@ -145,7 +145,7 @@ public class MaxScoreTest extends MatchingSetupTest
 		
 		Manager manager = new RankedManager(efIndex);
 		ResultSet rs = manager.run(srq);
-		manager.close();
+		// manager.close();
 
 		return rs;
 	}
@@ -164,7 +164,7 @@ public class MaxScoreTest extends MatchingSetupTest
 		MatchingConfiguration.set(Property.WEIGHTING_MODEL_CLASSNAME, model);
 		Manager manager = new MaxScoreManager(efIndex);
 		ResultSet rs = manager.run(srq);
-		manager.close();
+		// manager.close();
 
 		ResultSet current = rs;
 		
@@ -185,7 +185,7 @@ public class MaxScoreTest extends MatchingSetupTest
 		MatchingConfiguration.set(Property.WEIGHTING_MODEL_CLASSNAME, model);
 		Manager manager = new MaxScoreManager(efIndex);
 		ResultSet rs = manager.run(srq);
-		manager.close();
+		// manager.close();
 
 		ResultSet current = rs;
 		
@@ -206,7 +206,7 @@ public class MaxScoreTest extends MatchingSetupTest
 		MatchingConfiguration.set(Property.WEIGHTING_MODEL_CLASSNAME, model);
 		Manager manager = new MaxScoreManager(efIndex);
 		ResultSet rs = manager.run(srq);
-		manager.close();
+		// manager.close();
 
 		ResultSet current = rs;
 		
