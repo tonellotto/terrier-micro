@@ -71,6 +71,18 @@ public abstract class MatchingSetupTest
 		makeEnvironment(false);
 	}
 	
+	/**
+	 * Performs the following step:
+	 * <ol>
+	 * 	 <li> Creates a temporary folder where to store the test index.
+	 * 	 <li> Creates a clean terrier.etc folder.
+	 * 	 <li> Creates a terrier.properties file to index the test collection, with and wihtout blocks
+	 * 	 <li> Creates a log configuration file.
+	 * </ol>
+	 * @param with_blocks if true, indexing will generate a positional index.
+	 *
+	 * @throws Exception
+	 */
 	public static void makeEnvironment(final boolean with_blocks) throws Exception
 	{
 		tmpFolder = new TemporaryFolder();
@@ -125,6 +137,9 @@ public abstract class MatchingSetupTest
 		System.setProperty("termpipelines", "Stopwords,PorterStemmer");		
 	}
 	
+	/**
+	 * Deletes the temporary folder an all its contents.
+	 */
 	public static void deleteTerrierEtc()
 	{
 		File fs[] = new File(terrierEtc).listFiles();
@@ -135,6 +150,11 @@ public abstract class MatchingSetupTest
 		tmpFolder.delete();
 	}
 
+	/**
+	 * Creates a log configuration file for testing purposes.
+	 * 
+	 * @throws IOException
+	 */
 	private static void createTerrierLogFile() throws IOException
 	{
 		// creating a terrier-log.xml file
@@ -183,6 +203,12 @@ public abstract class MatchingSetupTest
 
 	}
 	
+	/**
+	 * Creates a Terrier properties file for testing purposes.
+	 * 
+	 * @throws IOException
+	 */
+
 	private static void createTerrierPropertiesFile(final boolean with_blocks) throws IOException
 	{
 		//creating the terrier.properties file
