@@ -33,15 +33,21 @@
       <name>Nicola Tonellotto</name>
     </developer>
   </developers>
-<!-- 
+
   <repositories>
     <repository>
       <id>jitpack.io</id>
       <url>https://jitpack.io</url>
     </repository>
   </repositories>
- -->
+
   <dependencies>
+
+    <dependency>
+      <groupId>it.unimi.dsi</groupId>
+      <artifactId>dsiutils</artifactId>
+      <version>2.6.5</version>
+    </dependency>
 
     <dependency>
       <groupId>it.unimi.dsi</groupId>
@@ -54,20 +60,20 @@
       <artifactId>guava</artifactId>
       <version>29.0-jre</version>
     </dependency>
-
+<!--
     <dependency>
       <groupId>it.cnr.isti.hpclab</groupId>
       <artifactId>terrier-eliasfano</artifactId>
       <version>1.5.2</version>
     </dependency>
+-->
 
-<!-- 
     <dependency>
       <groupId>com.github.tonellotto</groupId>
       <artifactId>terrier-ef</artifactId>
       <version>v1.${terrier.version}</version>
     </dependency>
--->
+
     <dependency>
       <groupId>org.terrier</groupId>
       <artifactId>terrier-core</artifactId>
@@ -91,12 +97,6 @@
       <groupId>commons-configuration</groupId>
       <artifactId>commons-configuration</artifactId>
       <version>1.10</version>
-    </dependency>
-
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.17</version>
     </dependency>
 
     <dependency>
