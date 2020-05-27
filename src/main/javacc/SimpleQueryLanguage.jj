@@ -61,8 +61,9 @@ SKIP : { " " | "\t" | "\r" | "\f" | "\n" }
 TOKEN : { <WORD : (["A"-"Z","a"-"z","0"-"9"])+ > | <PLUS: "+"> | <HAT: "^"> : Number }
 
 <Number> TOKEN : {
-	    < NUMBER: (<DIGIT>)+ ( "." (<DIGIT>)+ )? > : DEFAULT
-	|   < DIGIT: ["0"-"9"] > : DEFAULT
+	    < NUMBER: (<DIGIT>)+ | (<DIGIT>)+ (".") (<DIGIT>)* (<DECIMAL_EXPONENT>)? > : DEFAULT
+   	|   < DECIMAL_EXPONENT: ["e","E"] (["+","-"])? (<DIGIT>)+> : DEFAULT
+	|   < DIGIT: ["0"-"9"] > : DEFAULT	
 }
 
 /** Top level */

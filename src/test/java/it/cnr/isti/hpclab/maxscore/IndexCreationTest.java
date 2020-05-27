@@ -48,115 +48,115 @@ import it.cnr.isti.hpclab.matching.structures.model.BM25;
 
 public class IndexCreationTest extends MatchingSetupTest
 {
-	protected static IndexOnDisk originalIndex = null;
-	protected static IndexOnDisk succinctIndex = null;
-	
-	@BeforeClass public static void createIndexesOnDisk() throws Exception
-	{
-		MatchingSetupTest.makeEnvironment();
-		MatchingSetupTest.doWT10GSampleIndexing();
-		
-		String args[] = {"-path", terrierEtc, 
-				 "-prefix", "data" + EliasFano.USUAL_EXTENSION, 
-				 "-index", terrierEtc + File.separator + "data.properties", 
-				 "-p", Integer.toString(3)};
-		System.setProperty(EliasFano.LOG2QUANTUM, "3");
-		Generator.main(args);
-				
-		loadIndexes();
-		createMaxScoreIndexes();
-	}
-	
-	private static void createMaxScoreIndexes() throws IOException
-	{
-		if (Files.exists(Paths.get(originalIndex.getPath() + File.separator + originalIndex.getPrefix() + ".ef" + MaxScoreIndex.USUAL_EXTENSION)))
-			Files.delete(Paths.get(originalIndex.getPath() + File.separator + originalIndex.getPrefix() + ".ef" + MaxScoreIndex.USUAL_EXTENSION));
-		
-		String argsMS1[] = {"-index", originalIndex.getPath() + File.separator + originalIndex.getPrefix() + ".properties",
-						 "-wm", "BM25",
-				 		 "-p", Integer.toString(3)};
+    protected static IndexOnDisk originalIndex = null;
+    protected static IndexOnDisk succinctIndex = null;
+    
+    @BeforeClass public static void createIndexesOnDisk() throws Exception
+    {
+        MatchingSetupTest.makeEnvironment();
+        MatchingSetupTest.doWT10GSampleIndexing();
+        
+        String args[] = {"-path", terrierEtc, 
+                         "-prefix", "data" + EliasFano.USUAL_EXTENSION, 
+                         "-index", terrierEtc + File.separator + "data.properties", 
+                         "-p", Integer.toString(3)};
+        System.setProperty(EliasFano.LOG2QUANTUM, "3");
+        Generator.main(args);
+                
+        loadIndexes();
+        createMaxScoreIndexes();
+    }
+    
+    private static void createMaxScoreIndexes() throws IOException
+    {
+        if (Files.exists(Paths.get(originalIndex.getPath() + File.separator + originalIndex.getPrefix() + ".ef" + MaxScoreIndex.USUAL_EXTENSION)))
+            Files.delete(Paths.get(originalIndex.getPath() + File.separator + originalIndex.getPrefix() + ".ef" + MaxScoreIndex.USUAL_EXTENSION));
+        
+        String argsMS1[] = {"-index", originalIndex.getPath() + File.separator + originalIndex.getPrefix() + ".properties",
+                            "-wm", "BM25",
+                            "-p", Integer.toString(2)};
 
-		String argsMS2[] = {"-index", originalIndex.getPath() + File.separator + originalIndex.getPrefix() + ".ef.properties",
-				 "-wm", "BM25",
-		 		 "-p", Integer.toString(3)};
+        String argsMS2[] = {"-index", originalIndex.getPath() + File.separator + originalIndex.getPrefix() + ".ef.properties",
+                            "-wm", "BM25",
+                            "-p", Integer.toString(2)};
 
-		MSGenerator.main(argsMS1);
-		MSGenerator.main(argsMS2);
-	}
-	
-	private static void loadIndexes()
-	{
-		originalIndex = IndexOnDisk.createIndex();
-		succinctIndex = IndexOnDisk.createIndex(originalIndex.getPath(), originalIndex.getPrefix() + EliasFano.USUAL_EXTENSION);
-	}
-	
-	@AfterClass public static void clean() 
-	{
-		deleteTerrierEtc();
-	}
-		
-	@Before public void openIndex() throws IOException
-	{
-		loadIndexes();
-	}
-	
-	@After public void closeIndex() throws IOException
-	{
-		originalIndex.close();
-		succinctIndex.close();
-	}
+        MSGenerator.main(argsMS1);
+        MSGenerator.main(argsMS2);
+    }
+    
+    private static void loadIndexes()
+    {
+        originalIndex = IndexOnDisk.createIndex();
+        succinctIndex = IndexOnDisk.createIndex(originalIndex.getPath(), originalIndex.getPrefix() + EliasFano.USUAL_EXTENSION);
+    }
+    
+    @AfterClass public static void clean() 
+    {
+        deleteTerrierEtc();
+    }
+        
+    @Before public void openIndex() throws IOException
+    {
+        loadIndexes();
+    }
+    
+    @After public void closeIndex() throws IOException
+    {
+        originalIndex.close();
+        succinctIndex.close();
+    }
 
-	
-	@Test public void testOriginal() throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException
-	{
-		IndexOnDisk index = originalIndex;
-		MaxScoreIndex msi = new MaxScoreIndex(index);
-		
-		WeightingModel wm_model = (WeightingModel) (Class.forName(BM25.class.getName()).asSubclass(WeightingModel.class).getConstructor().newInstance());
-		wm_model.setup(index);
-		
-		for (int i = 0; i < index.getCollectionStatistics().getNumberOfUniqueTerms(); i++) {
-			Map.Entry<String, LexiconEntry> mEntry = index.getLexicon().getIthLexiconEntry(i);
-	    	String term = mEntry.getKey();
+    @Test
+    public void testOriginal() throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException
+    {
+        IndexOnDisk index = originalIndex;
+        MaxScoreIndex msi = new MaxScoreIndex(index);
+        
+        WeightingModel wm_model = (WeightingModel) (Class.forName(BM25.class.getName()).asSubclass(WeightingModel.class).getConstructor().newInstance());
+        wm_model.setup(index);
+        
+        for (int i = 0; i < index.getCollectionStatistics().getNumberOfUniqueTerms(); i++) {
+            Map.Entry<String, LexiconEntry> mEntry = index.getLexicon().getIthLexiconEntry(i);
+            String term = mEntry.getKey();
 
-			IterablePosting posting = index.getInvertedIndex().getPostings((BitIndexPointer) index.getLexicon().getLexiconEntry(term));
-			float max_score = 0.0f;
-			while (posting.next() != IterablePosting.END_OF_LIST) {
-				double score = wm_model.score(1, posting.getFrequency(), posting.getDocumentLength(), mEntry.getValue().getDocumentFrequency());
-				if (score > max_score)
-					max_score = (float)score;
-			}
-			assertEquals(max_score, msi.getMaxScore(i), 1e-6);
-		}
-		
-		msi.close();
-	}
+            IterablePosting posting = index.getInvertedIndex().getPostings((BitIndexPointer) index.getLexicon().getLexiconEntry(term));
+            float max_score = 0.0f;
+            while (posting.next() != IterablePosting.END_OF_LIST) {
+                double score = wm_model.score(1, posting.getFrequency(), posting.getDocumentLength(), mEntry.getValue().getDocumentFrequency());
+                if (score > max_score)
+                    max_score = (float)score;
+            }
+            assertEquals("Problems with termid " + mEntry.getValue().getTermId(), max_score, msi.getMaxScore(i), 1e-6);
+        }
+        
+        msi.close();
+    }
 
-	@Test 
-	public void testSuccinct() throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException
-	{
-		IndexOnDisk index = succinctIndex;
-		MaxScoreIndex msi = new MaxScoreIndex(index);
-		
-		WeightingModel wm_model = (WeightingModel) (Class.forName(BM25.class.getName()).asSubclass(WeightingModel.class).getConstructor().newInstance());
-		wm_model.setup(index);
-		
-		for (int i = 0; i < index.getCollectionStatistics().getNumberOfUniqueTerms(); i++) {
-			Map.Entry<String, LexiconEntry> mEntry = index.getLexicon().getIthLexiconEntry(i);
-	    	String term = mEntry.getKey();
+    @Test
+    public void testSuccinct() throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException
+    {
+        IndexOnDisk index = succinctIndex;
+        MaxScoreIndex msi = new MaxScoreIndex(index);
+        
+        WeightingModel wm_model = (WeightingModel) (Class.forName(BM25.class.getName()).asSubclass(WeightingModel.class).getConstructor().newInstance());
+        wm_model.setup(index);
+        
+        for (int i = 0; i < index.getCollectionStatistics().getNumberOfUniqueTerms(); i++) {
+            Map.Entry<String, LexiconEntry> mEntry = index.getLexicon().getIthLexiconEntry(i);
+            String term = mEntry.getKey();
 
-			IterablePosting posting = index.getInvertedIndex().getPostings((BitIndexPointer) index.getLexicon().getLexiconEntry(term));
-			float max_score = 0.0f;
+            IterablePosting posting = index.getInvertedIndex().getPostings((BitIndexPointer) index.getLexicon().getLexiconEntry(term));
+            float max_score = 0.0f;
 
-			while (posting.next() != IterablePosting.END_OF_LIST) {
-				double score = wm_model.score(1, posting.getFrequency(), posting.getDocumentLength(), mEntry.getValue().getDocumentFrequency());
-				if (score > max_score)
-					max_score = (float)score;
-			}
-			assertEquals(max_score, msi.getMaxScore(i), 1e-6);
-		}
-		
-		msi.close();
-	}
+            while (posting.next() != IterablePosting.END_OF_LIST) {
+                double score = wm_model.score(1, posting.getFrequency(), posting.getDocumentLength(), mEntry.getValue().getDocumentFrequency());
+                if (score > max_score)
+                    max_score = (float)score;
+            }
+            assertEquals("Problems with termid " + mEntry.getValue().getTermId(), max_score, msi.getMaxScore(i), 1e-6);
+        }
+        
+        msi.close();
+    }
 
 }

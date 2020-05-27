@@ -20,7 +20,6 @@
 
 package it.cnr.isti.hpclab.manager;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;

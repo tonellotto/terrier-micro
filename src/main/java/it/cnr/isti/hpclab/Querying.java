@@ -66,18 +66,19 @@ public class Querying implements Closeable
 	
 	public Querying() 
 	{
-		this.createIndex();
-		this.createQuerySource();
-		this.createManager();
-		this.createResultOutput();
+		mIndex = createIndex();
+		mManager = createManager(mIndex);
+		
+		mQuerySource = createQuerySource();
+		mResultOutput = createResultOutput();
 	}
 	
-	protected void createIndex()
+	public static IndexOnDisk createIndex()
 	{
-		mIndex = Index.createIndex();
+		return Index.createIndex();
 	}
 	
-	protected void createManager() 
+	public static Manager createManager(final Index index) 
 	{
 		try {
 			String matchingAlgorithmClassName =  MatchingConfiguration.get(Property.MATCHING_ALGORITHM_CLASSNAME);
@@ -85,29 +86,27 @@ public class Querying implements Closeable
 				matchingAlgorithmClassName = MatchingConfiguration.get(Property.DEFAULT_NAMESPACE) + matchingAlgorithmClassName;
 			String mManagerClassName = Class.forName(matchingAlgorithmClassName).asSubclass(MatchingAlgorithm.class).getAnnotation(Managed.class).by();
 			 
-			mManager = (Manager) Class.forName(mManagerClassName).asSubclass(Manager.class).getConstructor(Index.class).newInstance(mIndex);
+			return (Manager) Class.forName(mManagerClassName).asSubclass(Manager.class).getConstructor(Index.class).newInstance(index);
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 
-	protected void createQuerySource() 
+	public static QuerySource createQuerySource() 
 	{
 		try {
 			String querySourceClassName =  MatchingConfiguration.get(Property.QUERY_SOURCE_CLASSNAME);
 			if (querySourceClassName.indexOf('.') == -1)
 				querySourceClassName = MatchingConfiguration.get(Property.DEFAULT_NAMESPACE) + querySourceClassName;
-			mQuerySource = (QuerySource) (Class.forName(querySourceClassName).asSubclass(QuerySource.class).getConstructor().newInstance());
-				// this.mQuerySource = new QuerySource(queryFilenames);
+			return (QuerySource) (Class.forName(querySourceClassName).asSubclass(QuerySource.class).getConstructor().newInstance());
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-
 	}
 	
-	protected void createResultOutput()
+	public static ResultOutput createResultOutput()
 	{
-		mResultOutput = ResultOutput.newInstance(MatchingConfiguration.get(Property.RESULTS_OUTPUT_TYPE));
+		return ResultOutput.newInstance(MatchingConfiguration.get(Property.RESULTS_OUTPUT_TYPE));
 	}
 
 	@Override

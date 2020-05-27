@@ -57,4 +57,11 @@ public class TestSimpleQueryParser
 		assertEquals((rtr.get(1)).getQueryTerm(), "family");
 		assertEquals((rtr.get(2)).getQueryTerm(), "tree");
 	}
+
+	@Test public void testWeights2() throws Exception 
+	{
+		String toTest = "russian^4.74304222734645E-4 crime^0.3329210579395294 yerin^1.5178071043919772E-4 ministri^2.5211251340806484E-4 crimin^3.7217154749669135E-4 enforc^1.6520200006198138E-4 fight^3.19878599839285E-4 intern^0.33230042457580566 affair^3.150526899844408E-4 organ^0.3327280580997467";
+		List<QueryTerm> rtr = parser.parse(toTest);
+		assertNotNull(rtr);
+	}
 }
