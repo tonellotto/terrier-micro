@@ -25,13 +25,13 @@ This package is [free software](http://www.gnu.org/philosophy/free-sw.html) dist
 
 [Elias-Fano compression for Terrier](https://github.com/tonellotto/terrier-ef) is required for testing purposes or if you plan to use it in your experiments, but it is not explicitly required for using the Terrier Micro package.
 
-To install the Elias-Fano compression for Terrier package (version 1.5.1) on your local machine, please run the following commands.
+To install the Elias-Fano compression for Terrier package (version 1.5.2) on your local machine, please run the following commands.
 
 ```bash
 git clone https://github.com/tonellotto/terrier-ef
 cd terrier-ef
-git checkout 1.5.1
-mvn install appassembler:assemble
+git checkout 1.5.2
+mvn install
 ```
 
 ## Usage
@@ -41,8 +41,8 @@ If not already available, e.g. from Maven Central, you should git clone and inst
 ```bash
 git clone https://github.com/tonellotto/terrier-micro
 cd terrier-micro
-git checkout 1.5.1
-mvn install appassembler:assemble
+git checkout 1.5.2
+mvn install
 ```
 
 The main script to perform batch query processing is the [retrieve](./docs/retrieve.md) tool.
