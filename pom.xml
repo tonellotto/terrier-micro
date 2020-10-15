@@ -255,7 +255,7 @@
         <version>1.10</version>
         <configuration>
           <assembleDirectory>${project.build.directory}</assembleDirectory>
-            <extraJvmArguments>-Xms1G -Xmx50G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit</extraJvmArguments>
+            <extraJvmArguments>-server -Xms1G -Xmx30G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit</extraJvmArguments>
             <platforms>unix</platforms>
             <projectArtifactFirstInClassPath>true</projectArtifactFirstInClassPath>
             <programs>
