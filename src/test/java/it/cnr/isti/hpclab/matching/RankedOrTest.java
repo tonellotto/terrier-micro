@@ -49,7 +49,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import org.terrier.structures.Index;
 import org.terrier.structures.IndexOnDisk;
 import org.terrier.structures.LexiconEntry;
 import org.terrier.structures.postings.IterablePosting;
@@ -119,8 +118,8 @@ public class RankedOrTest extends MatchingSetupTest
 	
 	@Before public void openIndex() throws IOException
 	{
-		originalIndex = Index.createIndex();	
-		efIndex = Index.createIndex(originalIndex.getPath(), originalIndex.getPrefix() + EliasFano.USUAL_EXTENSION);
+		originalIndex = IndexOnDisk.createIndex();	
+		efIndex = IndexOnDisk.createIndex(originalIndex.getPath(), originalIndex.getPrefix() + EliasFano.USUAL_EXTENSION);
 	}
 	
 	@After public void closeIndex() throws IOException
@@ -167,7 +166,7 @@ public class RankedOrTest extends MatchingSetupTest
 		MatchingConfiguration.set(Property.WEIGHTING_MODEL_CLASSNAME, model);
 		MatchingConfiguration.set(Property.TOP_K, "100000");
 		
-		SearchRequest srq = new SearchRequest(1, query);
+		SearchRequest srq = new SearchRequest("1", query);
 		
 		Manager manager = new RankedManager(originalIndex);
 		ResultSet rs = manager.run(srq);
@@ -194,7 +193,7 @@ public class RankedOrTest extends MatchingSetupTest
 		MatchingConfiguration.set(Property.WEIGHTING_MODEL_CLASSNAME, model);
 		MatchingConfiguration.set(Property.TOP_K, "100000");
 		
-		SearchRequest srq = new SearchRequest(1, query);
+		SearchRequest srq = new SearchRequest("1", query);
 		
 		Manager manager = new RankedManager(efIndex);
 		ResultSet rs = manager.run(srq);

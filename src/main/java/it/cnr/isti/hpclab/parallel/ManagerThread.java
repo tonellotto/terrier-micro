@@ -50,7 +50,7 @@ public class ManagerThread extends Thread
 	private Manager create_manager() 
 	{
 		try {
-			mIndex = Index.createIndex();
+			mIndex = IndexOnDisk.createIndex();
 			String matchingAlgorithmClassName =  MatchingConfiguration.get(Property.MATCHING_ALGORITHM_CLASSNAME);
 			if (matchingAlgorithmClassName.indexOf('.') == -1)
 				matchingAlgorithmClassName = MatchingConfiguration.get(Property.DEFAULT_NAMESPACE) + matchingAlgorithmClassName;

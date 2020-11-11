@@ -33,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.terrier.structures.BitIndexPointer;
-import org.terrier.structures.Index;
 import org.terrier.structures.IndexOnDisk;
 import org.terrier.structures.LexiconEntry;
 import org.terrier.structures.postings.IterablePosting;
@@ -70,7 +69,7 @@ class BMWMapper implements Function<TermPartition,TermPartition>
     {        
         int written = 0;
         try {
-            IndexOnDisk src_index = Index.createIndex(src_index_path, src_index_prefix);
+            IndexOnDisk src_index = IndexOnDisk.createIndex(src_index_path, src_index_prefix);
             String this_prefix = src_index.getPrefix() + "_partition_" + terms.id();
             terms.prefix(this_prefix);
 
@@ -154,12 +153,12 @@ class BMWMapper implements Function<TermPartition,TermPartition>
                     scoresOutput.writeFloat(Math.nextAfter(s, Double.MAX_VALUE));
                 
                 lee = lex_iter.hasNext() ? lex_iter.next() : null;
-                BMWGenerator.update_logger();
+                BMWGenerator.pb_map.step();
                 written++;
             }
-            
+
             src_index.close();
-        
+
             offsetsOutput.close();
             scoresOutput.close();
             docidsOutput.close();

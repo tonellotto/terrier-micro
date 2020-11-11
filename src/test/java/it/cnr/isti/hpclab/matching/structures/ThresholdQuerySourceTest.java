@@ -40,7 +40,7 @@ import it.cnr.isti.hpclab.matching.structures.query.ThresholdQuerySource;
 
 public class ThresholdQuerySourceTest 
 { 	
-	private final int[] qids          = {11, 22, 32, 41, 5 };
+	private final String[] qids          = {"11", "22", "32", "41", "5" };
 	private final String[] queries    = {"a", "b", "c", "d", "e" };
 	private final String[] thresholds = {"0.1", "0.2", "0.3", "0.4", "0.5" };
 		

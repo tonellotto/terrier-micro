@@ -73,11 +73,8 @@ class MSMapper implements Function<TermPartition,Object>
             // opening src index lexicon iterator and moving to the begin term pos
             Iterator<Entry<String, LexiconEntry>> lex_iter = src_index.getLexicon().iterator();
             Entry<String, LexiconEntry> lee = null;
-            int pos;
-            for (pos = -1; pos < terms.begin(); pos++)
-            //for (int pos = -1; pos < terms.begin(); pos++)
+            for (int pos = -1; pos < terms.begin(); pos++)
                 lee = lex_iter.next();
-            System.err.println(Thread.currentThread().getName() + " moving to id " + lee.getValue().getTermId() + " in pos " + pos);
             LexiconEntry le = null;
             IterablePosting p = null;
 
@@ -97,11 +94,9 @@ class MSMapper implements Function<TermPartition,Object>
                 msa[le.getTermId()] = max_score;
                 
                 lee = lex_iter.hasNext() ? lex_iter.next() : null;
-                MSGenerator.update_logger();
+                MSGenerator.pb_map.step();
                 written++;
             }
-            System.err.println(Thread.currentThread().getName() + " last computed termid " + le.getTermId());
-            System.err.println(Thread.currentThread().getName() + " written " + written + " entries");
             src_index.close();
         } catch (Exception e) {
             e.printStackTrace();

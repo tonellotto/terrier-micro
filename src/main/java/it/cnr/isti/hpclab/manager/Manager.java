@@ -104,6 +104,12 @@ public abstract class Manager // implements Closeable
 		loadIndex(index);
 	}
 
+	public void setModel(final WeightingModel wm)
+	{
+		this.mWeightingModel = wm;
+		mWeightingModel.setup(mIndex);
+	}
+	
 	protected void loadIndex(final Index index) 
 	{
 		if (index == null)

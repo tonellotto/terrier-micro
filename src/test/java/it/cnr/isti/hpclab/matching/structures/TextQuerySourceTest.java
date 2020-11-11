@@ -39,7 +39,7 @@ import it.cnr.isti.hpclab.matching.structures.query.TextQuerySource;
 
 public class TextQuerySourceTest 
 { 	
-	private final int[] qids          = {11, 22, 32, 41, 5 };
+	private final String[] qids          = {"11", "22", "32", "41", "5" };
 	private final String[] queries    = {"a", "b", "c", "d", "e" };
 		
 	@Test public void testQuerySourceNoQids() throws IOException

@@ -27,9 +27,9 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
@@ -39,19 +39,21 @@ import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.ParserProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terrier.structures.Index;
 import org.terrier.structures.IndexOnDisk;
 import org.terrier.utility.ApplicationSetup;
 
 import it.cnr.isti.hpclab.ef.TermPartition;
 import it.cnr.isti.hpclab.matching.structures.WeightingModel;
 import it.cnr.isti.hpclab.maxscore.structures.MaxScoreIndex;
-import it.unimi.dsi.logging.ProgressLogger;
+
+import me.tongfei.progressbar.ProgressBar;
+import me.tongfei.progressbar.ProgressBarBuilder;
+import me.tongfei.progressbar.ProgressBarStyle;
 
 public class MSGenerator
 {
     protected static Logger LOGGER = LoggerFactory.getLogger(MSGenerator.class);
-    protected final static ProgressLogger pl = new ProgressLogger(LOGGER, 30, TimeUnit.SECONDS, "term");
+    protected static ProgressBar pb_map;
 
     private final int num_terms;
 
@@ -74,14 +76,13 @@ public class MSGenerator
     public MSGenerator(final String src_index_path, final String src_index_prefix, final String wm_name) throws Exception 
     {
         // Load input index
-        IndexOnDisk src_index = Index.createIndex(src_index_path, src_index_prefix);
-        if (Index.getLastIndexLoadError() != null) {
-            throw new IllegalArgumentException("Error loading index: " + Index.getLastIndexLoadError());
+        IndexOnDisk src_index = IndexOnDisk.createIndex(src_index_path, src_index_prefix);
+        if (IndexOnDisk.getLastIndexLoadError() != null) {
+            throw new IllegalArgumentException("Error loading index: " + IndexOnDisk.getLastIndexLoadError());
         }
         this.num_terms = src_index.getCollectionStatistics().getNumberOfUniqueTerms();
         src_index.close();
         LOGGER.info("Input index contains " + this.num_terms + " terms");
-        pl.expectedUpdates = num_terms;
 
         // check dst maxscore index does not exist
         if (Files.exists(Paths.get(src_index_path + File.separator + src_index_prefix + MaxScoreIndex.USUAL_EXTENSION))) {
@@ -149,6 +150,7 @@ public class MSGenerator
         execute(args);
     }
     
+    @SuppressWarnings("deprecation")
     public static void execute(MSArgs args) 
     {
         IndexOnDisk.setIndexLoadingProfileAsRetrieval(false);
@@ -165,8 +167,7 @@ public class MSGenerator
         LOGGER.warn("Multi-threaded MaxScore generation is experimental - caution advised due to threads competing for available memory! YMMV.");
 
         long starttime = System.currentTimeMillis();
-        
-        pl.start();
+
         try {
             MSGenerator generator = new MSGenerator(src_index_path, src_index_prefix, wm_name);
             float[] msa = new float[generator.num_terms];
@@ -179,7 +180,15 @@ public class MSGenerator
             
             MSMapper mapper = new MSMapper(src_index_path, src_index_prefix, wm_name, msa);
 
+            pb_map = new ProgressBarBuilder()
+                    .setInitialMax(generator.num_terms)
+                    .setStyle(ProgressBarStyle.COLORFUL_UNICODE_BLOCK)
+                    .setTaskName("MaxScore computation")
+                    .setUpdateIntervalMillis(1000)
+                    .showSpeed(new DecimalFormat("#.###"))
+                    .build();
             Arrays.stream(partitions).parallel().map(mapper).toArray(Object[]::new);
+            pb_map.stop();
 
             long compresstime = System.currentTimeMillis();
             LOGGER.info("Parallel maxscore computation completed after " + (compresstime - starttime)/1000 + " seconds");
@@ -202,12 +211,11 @@ public class MSGenerator
         } catch (Exception e) {
             e.printStackTrace();
         }
-        pl.stop();
     }
     
     private static void writeProperties(String indexPath, String indexPrefix, String weightingModelClassName) throws IOException
     {
-        IndexOnDisk index = Index.createIndex(indexPath, indexPrefix);
+        IndexOnDisk index = IndexOnDisk.createIndex(indexPath, indexPrefix);
         index.setIndexProperty("index.maxscore.class","it.cnr.isti.hpclab.maxscore.structures.MaxScoreIndex");
         index.setIndexProperty("index.maxscore.parameter_types","org.terrier.structures.Index");
         index.setIndexProperty("index.maxscore.parameter_values","index");        
@@ -219,10 +227,5 @@ public class MSGenerator
     public TermPartition[] partition(final int num_threads)
     {
         return TermPartition.split(num_terms, num_threads);
-    }
-    
-    synchronized public static void update_logger()
-    {
-        pl.update();
     }
 }

@@ -38,7 +38,7 @@ public class LM implements WeightingModel
 {
 	public static double mu = 2500.0d;
 	
-	private long num_tokens_in_coll;
+	protected long num_tokens_in_coll;
 
 	/** {@inheritDoc} */
 	@Override
@@ -51,14 +51,14 @@ public class LM implements WeightingModel
 
 	/** {@inheritDoc} */
 	@Override
-	public final float score(int query_freq, int term_freq, int doc_len, int doc_freq) 
+	public float score(int query_freq, int term_freq, int doc_len, int doc_freq) 
 	{
 		throw new UnsupportedOperationException("This method should not be invoked, you need to pass 'term_freq_in_coll'!");
 	}
 	
 	/** {@inheritDoc} */
 	@Override
-	public final float score(int term_freq_in_query, int x, int y, int doc_freq_in_coll, int F_t)
+	public float score(int term_freq_in_query, int x, int y, int doc_freq_in_coll, int F_t)
 	{
 		double d_x = (double)x;
 		double d_y = (double)y;

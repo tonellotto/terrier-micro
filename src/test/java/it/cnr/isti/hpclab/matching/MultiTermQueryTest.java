@@ -50,7 +50,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.terrier.structures.Index;
+
 import org.terrier.structures.IndexOnDisk;
 
 @RunWith(value = Parameterized.class)
@@ -107,7 +107,7 @@ public class MultiTermQueryTest extends MatchingSetupTest
 	
 	@Before public void openIndex() throws IOException
 	{
-		efIndex = Index.createIndex(terrierEtc, "data" + EliasFano.USUAL_EXTENSION);
+		efIndex = IndexOnDisk.createIndex(terrierEtc, "data" + EliasFano.USUAL_EXTENSION);
 	}
 	
 	@After public void closeIndex() throws IOException
@@ -131,7 +131,7 @@ public class MultiTermQueryTest extends MatchingSetupTest
 		MatchingConfiguration.set(Property.IGNORE_LOW_IDF_TERMS, "false");
 		MatchingConfiguration.set(Property.MATCHING_ALGORITHM_CLASSNAME, "it.cnr.isti.hpclab.matching.MaxScore");
 		MatchingConfiguration.set(Property.WEIGHTING_MODEL_CLASSNAME, model);
-		SearchRequest srq = new SearchRequest(1, query);
+		SearchRequest srq = new SearchRequest("1", query);
 		
 		Manager manager = new MaxScoreManager(efIndex);
 		ResultSet rs = manager.run(srq);

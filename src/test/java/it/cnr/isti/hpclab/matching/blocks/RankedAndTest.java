@@ -47,7 +47,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.terrier.structures.Index;
 import org.terrier.structures.IndexOnDisk;
 import org.terrier.structures.LexiconEntry;
 import org.terrier.structures.postings.IterablePosting;
@@ -115,8 +114,8 @@ public class RankedAndTest extends MatchingSetupTest
 	
 	@Before public void openIndex() throws IOException
 	{
-		originalIndex = Index.createIndex();	
-		efIndex = Index.createIndex(originalIndex.getPath(), originalIndex.getPrefix() + EliasFano.USUAL_EXTENSION);
+		originalIndex = IndexOnDisk.createIndex();	
+		efIndex = IndexOnDisk.createIndex(originalIndex.getPath(), originalIndex.getPrefix() + EliasFano.USUAL_EXTENSION);
 	}
 	
 	@After public void closeIndex() throws IOException
@@ -161,7 +160,7 @@ public class RankedAndTest extends MatchingSetupTest
 		MatchingConfiguration.set(Property.IGNORE_LOW_IDF_TERMS, "false");
 		MatchingConfiguration.set(Property.MATCHING_ALGORITHM_CLASSNAME, "it.cnr.isti.hpclab.matching.RankedAnd");
 		MatchingConfiguration.set(Property.WEIGHTING_MODEL_CLASSNAME,    model);
-		SearchRequest srq = new SearchRequest(1, query);
+		SearchRequest srq = new SearchRequest("1", query);
 		
 		Manager manager = new RankedManager(originalIndex);
 		ResultSet rs = manager.run(srq);
@@ -186,7 +185,7 @@ public class RankedAndTest extends MatchingSetupTest
 		MatchingConfiguration.set(Property.IGNORE_LOW_IDF_TERMS, "false");
 		MatchingConfiguration.set(Property.MATCHING_ALGORITHM_CLASSNAME, "it.cnr.isti.hpclab.matching.RankedAnd");
 		MatchingConfiguration.set(Property.WEIGHTING_MODEL_CLASSNAME,    model);
-		SearchRequest srq = new SearchRequest(1, query);
+		SearchRequest srq = new SearchRequest("1", query);
 		
 		Manager manager = new RankedManager(efIndex);
 		ResultSet rs = manager.run(srq);

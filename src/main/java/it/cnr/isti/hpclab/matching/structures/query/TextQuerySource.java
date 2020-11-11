@@ -23,8 +23,6 @@ package it.cnr.isti.hpclab.matching.structures.query;
 import it.cnr.isti.hpclab.MatchingConfiguration;
 import it.cnr.isti.hpclab.MatchingConfiguration.Property;
 import it.cnr.isti.hpclab.util.Util;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 
@@ -55,130 +53,130 @@ import org.terrier.indexing.tokenisation.Tokeniser;
  * *  
  * <p><b>Properties:</b>
  * <ul>
- * 		<li><tt>micro.queries</tt> a comma separated list of filenames, containing the queries</li>
- * 		<li><tt>micro.queries.id</tt> - does the line start with a query id? (defaults to false) </li>
- * 		<li><tt>micro.queries.tokenise</tt> (defaults to false). By default, the query is not passed through a tokeniser. If set to true, then it will be passed through the tokeniser configured by the <tt>tokeniser</tt> property.</li>
- * 		<li><tt>micro.queries.num</tt> how many queries to process</li>
+ *         <li><tt>micro.queries</tt> a comma separated list of filenames, containing the queries</li>
+ *         <li><tt>micro.queries.id</tt> - does the line start with a query id? (defaults to false) </li>
+ *         <li><tt>micro.queries.tokenise</tt> (defaults to false). By default, the query is not passed through a tokeniser. If set to true, then it will be passed through the tokeniser configured by the <tt>tokeniser</tt> property.</li>
+ *         <li><tt>micro.queries.num</tt> how many queries to process</li>
  * </ul>
  */
 
 public class TextQuerySource implements QuerySource
 {
-	protected String[] mQueries;  /** The queries in the query file. */
-	protected int[]    mQueryIds; /** The query identifiers in the query file. */
-	
-	protected int mQueryIndex = 0; /** Pointer to current read position in query array. */
-	
-	public TextQuerySource() 
-	{
-		this(MatchingConfiguration.get(Property.QUERY_FILE));		
-	}
-	
-	public TextQuerySource(final File queryfile)
-	{
-		this(queryfile.getName());
-	}
-	
-	public TextQuerySource(final String queryfilename)
-	{
-		try {
-			checkArgument(queryfilename != null && queryfilename.length() > 0);
+    protected String[] mQueries;  /** The queries in the query file. */
+    protected String[] mQueryIds; /** The query identifiers in the query file. */
+    
+    protected int mQueryIndex = 0; /** Pointer to current read position in query array. */
+    
+    public TextQuerySource() 
+    {
+        this(MatchingConfiguration.get(Property.QUERY_FILE));
+    }
+    
+    public TextQuerySource(final File queryfile)
+    {
+        this(queryfile.getName());
+    }
+    
+    public TextQuerySource(final String queryfilename)
+    {
+        try {
+            checkArgument(queryfilename != null && queryfilename.length() > 0);
 
-			int num_queries = Integer.MAX_VALUE;
-			if (!MatchingConfiguration.get(Property.NUM_QUERIES).equals("all"))
-				num_queries = Integer.parseInt(MatchingConfiguration.get(Property.NUM_QUERIES));
+            int num_queries = Integer.MAX_VALUE;
+            if (!MatchingConfiguration.get(Property.NUM_QUERIES).equals("all"))
+                num_queries = Integer.parseInt(MatchingConfiguration.get(Property.NUM_QUERIES));
 
-			extractQueries(queryfilename, num_queries);			
-		} catch (Exception ioe) {
-			LOGGER.error("Problem getting the " + queryfilename + " file:", ioe);
-			return;
-		}
-	}
+            extractQueries(queryfilename, num_queries);            
+        } catch (Exception ioe) {
+            LOGGER.error("Problem getting the " + queryfilename + " file:", ioe);
+            return;
+        }
+    }
 
-	private boolean extractQueries(final String queryFilename, final int num_queries)
-	{		
-		LOGGER.info("Extracting queries from " + queryFilename + " - queryids: "+ MatchingConfiguration.get(Property.HAS_QUERY_ID));
+    private boolean extractQueries(final String queryFilename, final int num_queries)
+    {        
+        LOGGER.info("Extracting queries from " + queryFilename + " - queryids: "+ MatchingConfiguration.get(Property.HAS_QUERY_ID));
 
-		ObjectList<String> queries = new ObjectArrayList<String>();
-		IntList 		   qids    = new IntArrayList();
+        ObjectList<String> queries = new ObjectArrayList<String>();
+        ObjectList<String> qids    = new ObjectArrayList<String>();
 
-		if (!Files.exists(Paths.get(queryFilename))) {
-			LOGGER.error("The topics file " + queryFilename + " does not exist, or it cannot be read.");
-			return false;
-		}
+        if (!Files.exists(Paths.get(queryFilename))) {
+            LOGGER.error("The topics file " + queryFilename + " does not exist, or it cannot be read.");
+            return false;
+        }
 
-		boolean gotSome = false;
-		Tokeniser tokeniser = MatchingConfiguration.getBoolean(Property.MUST_TOKENISE) ? Tokeniser.getTokeniser() : new IdentityTokeniser();
+        boolean gotSome = false;
+        Tokeniser tokeniser = MatchingConfiguration.getBoolean(Property.MUST_TOKENISE) ? Tokeniser.getTokeniser() : new IdentityTokeniser();
 
-		String line = null;
-		int queryCount = 0;
+        String line = null;
+        int queryCount = 0;
 
-		try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(queryFilename)))) {
-			while ((line = br.readLine()) != null) {
-				line = line.trim();
-				
-				queryCount++;
-				int qid;
-				String query;
-				if (MatchingConfiguration.getBoolean(Property.HAS_QUERY_ID)) {
-					final int qidEnd = Util.IndexOfAny(line, new char[]{' ', '\t', ':'});
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(queryFilename)))) {
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                
+                queryCount++;
+                String qid;
+                String query;
+                if (MatchingConfiguration.getBoolean(Property.HAS_QUERY_ID)) {
+                    final int qidEnd = Util.IndexOfAny(line, new char[]{' ', '\t', ':'});
 
-					if (qidEnd == -1)
-						continue;
+                    if (qidEnd == -1)
+                        continue;
 
-					qid   = Integer.parseInt(line.substring(0,qidEnd));
-					query = line.substring(qidEnd + 1);
-				} else {
-					query = line;
-					qid = queryCount;
-				}
-				
-				query = Util.JoinStrings(tokeniser.getTokens(new StringReader(query)), " ");
-				
-				queries.add(query);
-				qids.add(qid);
-				gotSome = true;
-				LOGGER.debug("Extracted queryID " + qid + "  "+ query);
-				
-				if (queries.size() == num_queries)
-					break;
-			}
-		} catch (IOException ioe) {
-			LOGGER.error("IOException while extracting queries: ",ioe);	
-			return gotSome;
-		}
-		LOGGER.info("Extracted "+ queries.size() + " queries");
-		
-		this.mQueries = queries.toArray(new String[0]);
-		this.mQueryIds = qids.toArray(new int[0]);
+                    qid   = line.substring(0,qidEnd);
+                    query = line.substring(qidEnd + 1);
+                } else {
+                    query = line;
+                    qid = Integer.toString(queryCount);
+                }
+                
+                query = Util.JoinStrings(tokeniser.getTokens(new StringReader(query)), " ");
+                
+                queries.add(query);
+                qids.add(qid);
+                gotSome = true;
+                LOGGER.debug("Extracted queryID " + qid + "  "+ query);
+                
+                if (queries.size() == num_queries)
+                    break;
+            }
+        } catch (IOException ioe) {
+            LOGGER.error("IOException while extracting queries: ",ioe);    
+            return gotSome;
+        }
+        LOGGER.info("Extracted "+ queries.size() + " queries");
 
-		return gotSome;
-	}
+        this.mQueries = queries.toArray(new String[0]);
+        this.mQueryIds = qids.toArray(new String[0]);
 
-	@Override
-	public boolean hasNext() 
-	{
-		return mQueryIndex != mQueries.length;
-	}
+        return gotSome;
+    }
 
-	@Override
-	public String next() 
-	{
-		if (mQueryIndex == mQueries.length)
-			return null;
-		return mQueries[mQueryIndex++];
-	}
+    @Override
+    public boolean hasNext() 
+    {
+        return mQueryIndex != mQueries.length;
+    }
 
-	public int getQueryId()
-	{
-		if (mQueryIndex == 0)
-			throw new UnsupportedOperationException();
-		
-		return mQueryIds[mQueryIndex - 1];
-	}
+    @Override
+    public String next() 
+    {
+        if (mQueryIndex == mQueries.length)
+            return null;
+        return mQueries[mQueryIndex++];
+    }
 
-	public void reset()
-	{
-		mQueryIndex = 0;
-	}		
+    public String getQueryId()
+    {
+        if (mQueryIndex == 0)
+            throw new UnsupportedOperationException();
+        
+        return mQueryIds[mQueryIndex - 1];
+    }
+
+    public void reset()
+    {
+        mQueryIndex = 0;
+    }        
 }

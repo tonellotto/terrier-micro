@@ -52,136 +52,136 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * correctness tests and/or for effectiveness evaluation.
  */
 public class Querying implements Closeable
-{	
-	private static final Logger LOGGER = Logger.getLogger(Querying.class);	
-	
-	/** The number of matched queries. */
-	protected int mMatchingQueryCount = 0;
+{    
+    private static final Logger LOGGER = Logger.getLogger(Querying.class);    
+    
+    /** The number of matched queries. */
+    protected int mMatchingQueryCount = 0;
 
-	/** Data structures */
-	protected IndexOnDisk  mIndex;
-	protected QuerySource  mQuerySource;
-	protected Manager      mManager;
-	protected ResultOutput mResultOutput;
-	
-	public Querying() 
-	{
-		mIndex = createIndex();
-		mManager = createManager(mIndex);
-		
-		mQuerySource = createQuerySource();
-		mResultOutput = createResultOutput();
-	}
-	
-	public static IndexOnDisk createIndex()
-	{
-		return Index.createIndex();
-	}
-	
-	public static Manager createManager(final Index index) 
-	{
-		try {
-			String matchingAlgorithmClassName =  MatchingConfiguration.get(Property.MATCHING_ALGORITHM_CLASSNAME);
-			if (matchingAlgorithmClassName.indexOf('.') == -1)
-				matchingAlgorithmClassName = MatchingConfiguration.get(Property.DEFAULT_NAMESPACE) + matchingAlgorithmClassName;
-			String mManagerClassName = Class.forName(matchingAlgorithmClassName).asSubclass(MatchingAlgorithm.class).getAnnotation(Managed.class).by();
-			 
-			return (Manager) Class.forName(mManagerClassName).asSubclass(Manager.class).getConstructor(Index.class).newInstance(index);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+    /** Data structures */
+    protected IndexOnDisk  mIndex;
+    protected QuerySource  mQuerySource;
+    protected Manager      mManager;
+    protected ResultOutput mResultOutput;
+    
+    public Querying() 
+    {
+        mIndex = createIndex();
+        mManager = createManager(mIndex);
+        
+        mQuerySource = createQuerySource();
+        mResultOutput = createResultOutput();
+    }
+    
+    public static IndexOnDisk createIndex()
+    {
+        return IndexOnDisk.createIndex();
+    }
+    
+    public static Manager createManager(final Index index) 
+    {
+        try {
+            String matchingAlgorithmClassName =  MatchingConfiguration.get(Property.MATCHING_ALGORITHM_CLASSNAME);
+            if (matchingAlgorithmClassName.indexOf('.') == -1)
+                matchingAlgorithmClassName = MatchingConfiguration.get(Property.DEFAULT_NAMESPACE) + matchingAlgorithmClassName;
+            String mManagerClassName = Class.forName(matchingAlgorithmClassName).asSubclass(MatchingAlgorithm.class).getAnnotation(Managed.class).by();
+             
+            return (Manager) Class.forName(mManagerClassName).asSubclass(Manager.class).getConstructor(Index.class).newInstance(index);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	public static QuerySource createQuerySource() 
-	{
-		try {
-			String querySourceClassName =  MatchingConfiguration.get(Property.QUERY_SOURCE_CLASSNAME);
-			if (querySourceClassName.indexOf('.') == -1)
-				querySourceClassName = MatchingConfiguration.get(Property.DEFAULT_NAMESPACE) + querySourceClassName;
-			return (QuerySource) (Class.forName(querySourceClassName).asSubclass(QuerySource.class).getConstructor().newInstance());
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	public static ResultOutput createResultOutput()
-	{
-		return ResultOutput.newInstance(MatchingConfiguration.get(Property.RESULTS_OUTPUT_TYPE));
-	}
+    public static QuerySource createQuerySource() 
+    {
+        try {
+            String querySourceClassName =  MatchingConfiguration.get(Property.QUERY_SOURCE_CLASSNAME);
+            if (querySourceClassName.indexOf('.') == -1)
+                querySourceClassName = MatchingConfiguration.get(Property.DEFAULT_NAMESPACE) + querySourceClassName;
+            return (QuerySource) (Class.forName(querySourceClassName).asSubclass(QuerySource.class).getConstructor().newInstance());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public static ResultOutput createResultOutput()
+    {
+        return ResultOutput.newInstance(MatchingConfiguration.get(Property.RESULTS_OUTPUT_TYPE));
+    }
 
-	@Override
-	public void close() throws IOException 
-	{
-		// mManager.close();
-		mIndex.close();
-		mResultOutput.close();
-	}
+    @Override
+    public void close() throws IOException 
+    {
+        // mManager.close();
+        mIndex.close();
+        mResultOutput.close();
+    }
 
-	public void processQueries() throws IOException, QueryParserException 
-	{
-		mMatchingQueryCount = 0;
-		mQuerySource.reset();
+    public void processQueries() throws IOException, QueryParserException 
+    {
+        mMatchingQueryCount = 0;
+        mQuerySource.reset();
 
-		final long startTime = System.currentTimeMillis();
+        final long startTime = System.currentTimeMillis();
 
-		boolean doneSomeQueries = false;
-		
-		// iterating through the queries
-		while (mQuerySource.hasNext()) {
-			String query = mQuerySource.next();
-			int qid   = mQuerySource.getQueryId();
-			
-			float  qth   = 0.0f;
-			if (mQuerySource instanceof ThresholdQuerySource)
-				qth = ((ThresholdQuerySource) mQuerySource).getQueryThreshold();
-			
-			// process the query
-			long processingStartTime = System.currentTimeMillis();
-			processQuery(qid, query, qth);
-			long processingEndTime = System.currentTimeMillis();
-			if (LOGGER.isInfoEnabled())
-				LOGGER.info("Time to process query: " + ((processingEndTime - processingStartTime) / 1000.0D));
-			doneSomeQueries = true;
-		}
-		if (doneSomeQueries)
-			LOGGER.info("Finished topics, executed " + mMatchingQueryCount +
-						" queries in " + ((System.currentTimeMillis() - startTime) / 1000.0d) +
-						" seconds");
-	}
+        boolean doneSomeQueries = false;
+        
+        // iterating through the queries
+        while (mQuerySource.hasNext()) {
+            String query = mQuerySource.next();
+            String qid   = mQuerySource.getQueryId();
+            
+            float  qth   = 0.0f;
+            if (mQuerySource instanceof ThresholdQuerySource)
+                qth = ((ThresholdQuerySource) mQuerySource).getQueryThreshold();
+            
+            // process the query
+            long processingStartTime = System.currentTimeMillis();
+            processQuery(qid, query, qth);
+            long processingEndTime = System.currentTimeMillis();
+            if (LOGGER.isInfoEnabled())
+                LOGGER.info("Time to process query: " + ((processingEndTime - processingStartTime) / 1000.0D));
+            doneSomeQueries = true;
+        }
+        if (doneSomeQueries)
+            LOGGER.info("Finished topics, executed " + mMatchingQueryCount +
+                        " queries in " + ((System.currentTimeMillis() - startTime) / 1000.0d) +
+                        " seconds");
+    }
 
-	public SearchRequest processQuery(final int queryId, final String query, final float threshold) throws IOException, QueryParserException
-	{
-		checkNotNull(queryId);
-		checkNotNull(query);
-		
-		if (LOGGER.isInfoEnabled())
-			LOGGER.info(queryId + " : " + query);
-		
-		SearchRequest srq = new SearchRequest(queryId, query);
-		srq.getQuery().addMetadata(RuntimeProperty.INITIAL_THRESHOLD, Float.toString(threshold));
-		
-		if (LOGGER.isInfoEnabled())
-			LOGGER.info("Processing query: " + queryId + ": '" + query + "'");
-		mMatchingQueryCount++;
-		ResultSet rs = mManager.run(srq);
-		srq.setResultSet(rs); //TODO: shouldn't this be inside runMatching?
-		PrintStats(srq);
-		if (rs.size() != 0)
-			mResultOutput.print(srq);
-		return srq;
-	}
+    public SearchRequest processQuery(final String queryId, final String query, final float threshold) throws IOException, QueryParserException
+    {
+        checkNotNull(queryId);
+        checkNotNull(query);
+        
+        if (LOGGER.isInfoEnabled())
+            LOGGER.info(queryId + " : " + query);
+        
+        SearchRequest srq = new SearchRequest(queryId, query);
+        srq.getQuery().addMetadata(RuntimeProperty.INITIAL_THRESHOLD, Float.toString(threshold));
+        
+        if (LOGGER.isInfoEnabled())
+            LOGGER.info("Processing query: " + queryId + ": '" + query + "'");
+        mMatchingQueryCount++;
+        ResultSet rs = mManager.run(srq);
+        srq.setResultSet(rs); //TODO: shouldn't this be inside runMatching?
+        PrintStats(srq);
+        if (rs.size() != 0)
+            mResultOutput.print(srq);
+        return srq;
+    }
 
-	private static void PrintStats(SearchRequest srq) 
-	{
-		StatsLine statsLine = new StatsLine();
-		
-		statsLine.add("type", "\"query\"");
-		statsLine.add("qid", Integer.toString(srq.getQueryId()));
-		
-		for (RuntimeProperty prop: RuntimeProperty.values())
-			if (srq.getQuery().getMetadata(prop) != null)
-				statsLine.add(prop.toString(), srq.getQuery().getMetadata(prop));
+    private static void PrintStats(SearchRequest srq) 
+    {
+        StatsLine statsLine = new StatsLine();
+        
+        statsLine.add("type", "\"query\"");
+        statsLine.add("qid", srq.getQueryId());
+        
+        for (RuntimeProperty prop: RuntimeProperty.values())
+            if (srq.getQuery().getMetadata(prop) != null)
+                statsLine.add(prop.toString(), srq.getQuery().getMetadata(prop));
 
-		statsLine.print();
-	}
+        statsLine.print();
+    }
 }

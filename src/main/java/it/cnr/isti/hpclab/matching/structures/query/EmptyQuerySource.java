@@ -20,29 +20,36 @@
 
 package it.cnr.isti.hpclab.matching.structures.query;
 
-import it.cnr.isti.hpclab.MatchingConfiguration;
-import it.cnr.isti.hpclab.MatchingConfiguration.Property;
 
-import java.util.Iterator;
-
-import org.apache.log4j.Logger;
-
-public interface QuerySource extends Iterator<String>
+/** 
+ * This class represent a query source with no queries.
+ */
+public class EmptyQuerySource implements QuerySource
 {
-    public static Logger LOGGER = Logger.getLogger(QuerySource.class);
+    public EmptyQuerySource() 
+    {
+    }
 
     @Override
-    default public void remove() 
+    public boolean hasNext() 
+    {
+        return false;
+    }
+
+    @Override
+    public String next() 
+    {
+        return null;
+    }
+
+    @Override
+    public String getQueryId()
     {
         throw new UnsupportedOperationException();
     }
 
-    public String getQueryId();
-
-    public void reset();
-
-    default public boolean hasIds()
+    @Override
+    public void reset()
     {
-        return MatchingConfiguration.getBoolean(Property.HAS_QUERY_ID);
     }
 }

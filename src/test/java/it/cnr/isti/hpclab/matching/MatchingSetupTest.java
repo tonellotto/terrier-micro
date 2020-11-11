@@ -48,7 +48,7 @@ import org.junit.ClassRule;
 import org.junit.rules.TemporaryFolder;
 import org.terrier.applications.BatchIndexing;
 import org.terrier.applications.TRECIndexingSinglePass;
-import org.terrier.structures.Index;
+import org.terrier.structures.IndexOnDisk;
 import org.terrier.structures.LexiconEntry;
 import org.terrier.utility.ApplicationSetup;
 import org.terrier.utility.Files;
@@ -314,10 +314,10 @@ public abstract class MatchingSetupTest
 		// TrecTerrier.main(new String[] {"-i", "-j"});
 				
 		// check that indexing actually created an index
-		assertTrue("Index does not exist at [" + path + "," + prefix + "]", Index.existsIndex(path, prefix));
+		assertTrue("Index does not exist at [" + path + "," + prefix + "]", IndexOnDisk.existsIndex(path, prefix));
 		
-		Index i = Index.createIndex();
-		assertNotNull(Index.getLastIndexLoadError(), i);
+		IndexOnDisk i = IndexOnDisk.createIndex();
+		assertNotNull(IndexOnDisk.getLastIndexLoadError(), i);
 		assertTrue("Index does not have an inverted structure", i.hasIndexStructure("inverted"));
 		assertTrue("Index does not have an lexicon structure", i.hasIndexStructure("lexicon"));
 		assertTrue("Index does not have an document structure", i.hasIndexStructure("document"));
@@ -379,7 +379,7 @@ public abstract class MatchingSetupTest
 		makeEnvironment();
 		doWT10GSampleIndexing();
 		
-		Index index = Index.createIndex();
+		IndexOnDisk index = IndexOnDisk.createIndex();
 		
 		int num_terms = index.getCollectionStatistics().getNumberOfUniqueTerms();
 		//System.err.println(num_terms);
